@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Rezervasyon | Sniff Alsancak</title>
+  <meta name="description" content="Sniff Alsancak masa rezervasyonu.">
+  <link rel="stylesheet" href="assets/style.css">
+  <script defer src="assets/script.js"></script>
+</head>
+<body>
+  <nav class="site-nav">
+    <div class="brand-wrap">
+      <a class="brand smoke-logo" href="index.html">Sniff Alsancak</a>
+      <span class="brand-tag">İçki • Yemek • Kokteyl</span>
+    </div>
+    <button class="menu-toggle" aria-expanded="false" aria-label="Menüyü aç">Menü</button>
+    <ul class="nav-links">
+      <li><a href="index.html">Anasayfa</a></li>
+      <li><a href="about.html">Hakkımızda</a></li>
+      <li><a href="cocktails.html">Kokteyller</a></li>
+      <li><a href="gallery.html">Galeri</a></li>
+      <li><a href="events.html">Etkinlikler</a></li>
+      <li><a class="active" href="reservation.html">Rezervasyon</a></li>
+      <li><a href="contact.html">İletişim</a></li>
+    </ul>
+  </nav>
+
+  <div class="floating-glass-wrap" aria-hidden="true">
+    <img class="floating-glass" src="assets/glass-overlay.png" alt="">
+  </div>
+
+  <main>
+    <section class="page-hero" style="--hero-image:url('https://images.unsplash.com/photo-1745060829956-dcd14b3511cb?auto=format&fit=crop&fm=jpg&ixlib=rb-4.1.0&q=80&w=2400')">
+      <div class="page-lights">
+        <span class="parallax" data-speed="0.08"></span>
+        <span class="parallax" data-speed="0.12"></span>
+        <span class="parallax" data-speed="0.17"></span>
+      </div>
+      <div class="page-hero-content" data-reveal>
+        <p class="page-kicker">Masa Rezervasyonu</p>
+        <h1>Geceni Rezerve Et</h1>
+        <p>Sniff Alsancak'ta yerini ayırt, geceyi önden garantiye al.</p>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container bg-cover-section" style="--section-image:url('https://images.unsplash.com/photo-1761388545625-b233a6f35628?auto=format&fit=crop&fm=jpg&ixlib=rb-4.1.0&q=80&w=2400')" data-reveal>
+        <div class="bg-cover-content">
+          <article>
+            <span class="badge">Rezervasyon Bilgisi</span>
+            <h2 class="section-title">Şık Geceler Burada Başlar</h2>
+            <p class="lead">Hafta sonu ve özel etkinliklerde yoğunluk yaşanır. Formu doldur, ekibimiz telefonla onaylasın.</p>
+            <div class="info-list">
+              <div><strong>Adres:</strong> 1469 Sokak No 47, İzmir</div>
+              <div><strong>Telefon:</strong> +90 546 193 8469</div>
+              <div><strong>Deneyim:</strong> İçki • Yemek • Kokteyl</div>
+            </div>
+          </article>
+
+          <form class="form-wrap" data-reservation-form autocomplete="off">
+            <div class="form-grid">
+              <div class="field">
+                <label for="name">Ad Soyad</label>
+                <input id="name" name="reservation_name" type="text" required autocomplete="off" autocapitalize="words" spellcheck="false">
+              </div>
+              <div class="field">
+                <label for="phone">Telefon</label>
+                <input id="phone" name="reservation_phone" type="tel" required autocomplete="off" inputmode="tel">
+              </div>
+              <div class="field">
+                <label for="guests">Kişi Sayısı</label>
+                <select id="guests" name="reservation_guests" required autocomplete="off">
+                  <option value="">Seçiniz</option>
+                  <option>1-2 Kişi</option>
+                  <option>3-4 Kişi</option>
+                  <option>5-8 Kişi</option>
+                  <option>9+ Kişi</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="date">Tarih</label>
+                <input id="date" name="reservation_date" type="date" required autocomplete="off">
+              </div>
+              <div class="field">
+                <label for="time">Saat</label>
+                <input id="time" name="reservation_time" type="text" required autocomplete="off" inputmode="numeric" pattern="^([01]?[0-9]|2[0-3]):[0-5][0-9]$" aria-label="Saat (SS:DD)" placeholder="">
+              </div>
+              <div class="field field-full">
+                <label for="notes">Not</label>
+                <textarea id="notes" name="reservation_notes" rows="4" placeholder="Opsiyonel not" autocomplete="off"></textarea>
+              </div>
+              <div class="field field-full">
+                <button class="btn btn-primary" type="submit">Hemen Rezervasyon Yap</button>
+              </div>
+            </div>
+            <p class="form-note">Rezervasyon talepleri telefonla onaylanır.</p>
+          </form>
+        </div>
+      </div>
+    </section>
+  </main>
+
+    <footer class="site-footer" data-scroll-divider>
+    <div class="container footer-modern">
+      <div class="ornament-divider footer-divider">
+        <span class="orn-line orn-left"></span>
+        <span class="orn-sigil" aria-hidden="true">
+          <svg viewBox="0 0 160 36" role="presentation">
+            <path d="M4 18c8 0 8-12 0-12-8 0-8 24 16 24s24-24 0-24" />
+            <path d="M156 18c-8 0-8-12 0-12 8 0 8 24-16 24s-24-24 0-24" />
+          </svg>
+        </span>
+        <span class="orn-line orn-right"></span>
+      </div>
+
+      <div class="footer-hero-row">
+        <div class="footer-brand-block">
+          <p class="footer-mini">Sniff Alsancak</p>
+          <h3>Alsancak gecesinin premium bulusma noktasi.</h3>
+          <p>1469 Sokak No 47, Izmir, Turkiye • +90 546 193 8469</p>
+        </div>
+        <a class="btn btn-primary footer-cta" href="reservation.html">Rezervasyon Yap</a>
+      </div>
+
+      <div class="footer-links-grid">
+        <div class="footer-col">
+          <h4>Mekan</h4>
+          <p>Drink • Food • Cocktail</p>
+          <p>Instagram: @sniffalsancak</p>
+        </div>
+
+        <div class="footer-col">
+          <h4>Sayfalar</h4>
+          <a href="index.html">Anasayfa</a>
+          <a href="cocktails.html">Kokteyller</a>
+          <a href="events.html">Etkinlikler</a>
+          <a href="contact.html">Iletisim</a>
+        </div>
+
+        <div class="footer-col">
+          <h4>Program</h4>
+          <p>Cuma: DJ Geceleri</p>
+          <p>Cumartesi: Imza Kokteyl Gecesi</p>
+          <p>Hafta Sonu: Weekend Party</p>
+        </div>
+
+        <div class="footer-col">
+          <h4>Sosyal</h4>
+          <div class="socials modern-socials">
+            <a href="https://www.instagram.com/sniffalsancak/" target="_blank" rel="noopener">Instagram</a>
+            <a href="tel:+905461938469">Ara</a>
+            <a href="reservation.html">Masa Ayirt</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer-bottom-line">
+        <span>© <span data-year></span> Sniff Alsancak</span>
+        <span class="footer-credit">Designed by <strong>Aslan Tasarım</strong> · <a href="https://aslandigital.tr" target="_blank" rel="noopener">aslandigital.tr</a></span>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>
