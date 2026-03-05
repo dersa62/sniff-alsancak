@@ -11,6 +11,14 @@ const cinematicParallaxContainers = document.querySelectorAll('[data-cinematic-p
 const yearNodes = document.querySelectorAll('[data-year]');
 const reservationForms = document.querySelectorAll('[data-reservation-form]');
 const floatingGlass = document.querySelector('.floating-glass');
+const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const cinematicGroups = Array.from(cinematicParallaxContainers).map((container) => ({
+  container,
+  layers: Array.from(container.querySelectorAll('.parallax-layer')).map((layer) => ({
+    el: layer,
+    ratio: Number(layer.getAttribute('data-ratio') || 0.5),
+  })),
+}));
 
 const clearReservationForm = (form) => {
   form.reset();
@@ -61,6 +69,11 @@ let ticking = false;
 const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
 
 const handleParallax = () => {
+  if (prefersReducedMotion) {
+    ticking = false;
+    return;
+  }
+
   const y = window.scrollY;
   const viewportCenter = window.innerHeight / 2;
 
@@ -97,15 +110,15 @@ const handleParallax = () => {
     node.style.setProperty('--tile-offset', `${offset}px`);
   });
 
-  cinematicParallaxContainers.forEach((container) => {
+  const cinematicDepth = window.innerWidth < 840 ? 105 : 170;
+
+  cinematicGroups.forEach(({ container, layers }) => {
     const rect = container.getBoundingClientRect();
     const progress = clamp((window.innerHeight - rect.top) / (window.innerHeight + rect.height), 0, 1);
     const depth = (progress - 0.5) * 2;
-    const layers = container.querySelectorAll('.parallax-layer');
-    layers.forEach((layer) => {
-      const ratio = Number(layer.getAttribute('data-ratio') || 0.5);
-      const offset = depth * 170 * ratio;
-      layer.style.transform = `translate3d(0, ${offset}px, 0)`;
+    layers.forEach(({ el, ratio }) => {
+      const offset = depth * cinematicDepth * ratio;
+      el.style.setProperty('--parallax-y', `${offset.toFixed(2)}px`);
     });
   });
 
@@ -114,7 +127,14 @@ const handleParallax = () => {
     const total = window.innerHeight + rect.height;
     const rawProgress = (window.innerHeight - rect.top) / total;
     const progress = clamp(rawProgress, 0.05, 1);
-    node.style.setProperty('--divider-progress', progress.toFixed(3));
+    const value = progress.toFixed(3);
+    node.style.setProperty('--divider-progress', value);
+
+    // Decorative lines live in inner wrappers; keep the variable in sync there too.
+    const innerTargets = node.querySelectorAll('.contact-art-card, .footer-modern');
+    innerTargets.forEach((target) => {
+      target.style.setProperty('--divider-progress', value);
+    });
   });
 
   if (floatingGlass) {
