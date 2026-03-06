@@ -14,6 +14,7 @@ const reservationForms = document.querySelectorAll('[data-reservation-form]');
 const floatingGlass = document.querySelector('.floating-glass');
 const cinematicHero = document.querySelector('.hero-refined, .hero-cinematic');
 const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const cookiePreferenceKey = 'sniff_cookie_preference_v1';
 
 const cinematicGroups = Array.from(cinematicParallaxContainers).map((container) => ({
   container,
@@ -229,6 +230,7 @@ reservationForms.forEach((form) => {
 
   form.addEventListener('submit', (event) => {
     event.preventDefault();
+    if (!form.reportValidity()) return;
     const note = form.querySelector('.form-note');
     if (!note) return;
     note.textContent = 'Rezervasyon talebiniz alındı. Kısa süre içinde telefonla onay verilecektir.';
@@ -236,6 +238,51 @@ reservationForms.forEach((form) => {
     form.reset();
   });
 });
+
+const saveCookiePreference = (value) => {
+  try {
+    localStorage.setItem(cookiePreferenceKey, value);
+  } catch (_) {
+    // No-op when localStorage is unavailable.
+  }
+};
+
+const getCookiePreference = () => {
+  try {
+    return localStorage.getItem(cookiePreferenceKey);
+  } catch (_) {
+    return null;
+  }
+};
+
+const mountCookieBanner = () => {
+  if (getCookiePreference()) return;
+
+  const banner = document.createElement('aside');
+  banner.className = 'cookie-banner';
+  banner.setAttribute('role', 'dialog');
+  banner.setAttribute('aria-live', 'polite');
+  banner.innerHTML = `
+    <div class=\"cookie-banner-inner\">
+      <p>Bu site, rezervasyon deneyimi ve temel tercihleriniz için çerezler kullanır. Detaylar için <a href=\"cerez-politikasi.html\">Çerez Politikası</a> ve <a href=\"gizlilik-politikasi.html\">Gizlilik Politikası</a> sayfalarını inceleyin.</p>
+      <div class=\"cookie-actions\">
+        <button type=\"button\" class=\"cookie-btn accept\" data-cookie-choice=\"accept\">Kabul Et</button>
+        <button type=\"button\" class=\"cookie-btn\" data-cookie-choice=\"reject\">Reddet</button>
+      </div>
+    </div>
+  `;
+
+  banner.addEventListener('click', (event) => {
+    const target = event.target;
+    if (!(target instanceof HTMLElement)) return;
+    const choice = target.getAttribute('data-cookie-choice');
+    if (!choice) return;
+    saveCookiePreference(choice);
+    banner.remove();
+  });
+
+  document.body.appendChild(banner);
+};
 
 window.addEventListener('pageshow', () => {
   reservationForms.forEach((form) => {
@@ -245,3 +292,4 @@ window.addEventListener('pageshow', () => {
 });
 
 queueAnimation();
+mountCookieBanner();
