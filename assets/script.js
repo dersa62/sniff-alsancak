@@ -1,6 +1,7 @@
 const nav = document.querySelector('.site-nav');
 const toggle = document.querySelector('.menu-toggle');
-const revealNodes = document.querySelectorAll('[data-reveal]');
+const revealNodes = Array.from(document.querySelectorAll('[data-reveal]'));
+const splitNodes = Array.from(document.querySelectorAll('[data-split]'));
 const parallaxNodes = document.querySelectorAll('[data-speed]');
 const heroParallaxNodes = document.querySelectorAll('.hero, .page-hero');
 const sectionParallaxNodes = document.querySelectorAll('.bg-cover-section');
@@ -11,7 +12,9 @@ const cinematicParallaxContainers = document.querySelectorAll('[data-cinematic-p
 const yearNodes = document.querySelectorAll('[data-year]');
 const reservationForms = document.querySelectorAll('[data-reservation-form]');
 const floatingGlass = document.querySelector('.floating-glass');
+const cinematicHero = document.querySelector('.hero-refined, .hero-cinematic');
 const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
 const cinematicGroups = Array.from(cinematicParallaxContainers).map((container) => ({
   container,
   layers: Array.from(container.querySelectorAll('.parallax-layer')).map((layer) => ({
@@ -19,6 +22,8 @@ const cinematicGroups = Array.from(cinematicParallaxContainers).map((container) 
     ratio: Number(layer.getAttribute('data-ratio') || 0.5),
   })),
 }));
+
+const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
 
 const clearReservationForm = (form) => {
   form.reset();
@@ -33,21 +38,46 @@ const clearReservationForm = (form) => {
   });
 };
 
+const splitTextNode = (node) => {
+  if (node.classList.contains('split-ready')) return;
+
+  const source = node.textContent || '';
+  const text = source.replace(/\s+/g, ' ').trim();
+  if (!text) return;
+
+  const fragment = document.createDocumentFragment();
+
+  Array.from(text).forEach((char, index) => {
+    const span = document.createElement('span');
+    if (char === ' ') {
+      span.className = 'split-space';
+      span.textContent = '\u00a0';
+    } else {
+      span.className = 'split-char';
+      span.style.setProperty('--char-index', String(index));
+      span.textContent = char;
+    }
+    fragment.appendChild(span);
+  });
+
+  node.textContent = '';
+  node.appendChild(fragment);
+  node.classList.add('split-ready');
+};
+
+splitNodes.forEach(splitTextNode);
+
+revealNodes.forEach((node, index) => {
+  const delay = (index % 8) * 40;
+  node.style.setProperty('--reveal-delay', `${delay}ms`);
+});
+
 if (toggle && nav) {
   toggle.addEventListener('click', () => {
     const open = nav.classList.toggle('open');
     toggle.setAttribute('aria-expanded', String(open));
   });
 }
-
-window.addEventListener(
-  'scroll',
-  () => {
-    if (!nav) return;
-    nav.classList.toggle('scrolled', window.scrollY > 14);
-  },
-  { passive: true }
-);
 
 const observer = new IntersectionObserver(
   (entries) => {
@@ -64,18 +94,19 @@ const observer = new IntersectionObserver(
 
 revealNodes.forEach((node) => observer.observe(node));
 
-let ticking = false;
+const updateVisuals = (scrollYValue) => {
+  const y = scrollYValue;
+  const viewportCenter = window.innerHeight / 2;
 
-const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
-
-const handleParallax = () => {
-  if (prefersReducedMotion) {
-    ticking = false;
-    return;
+  if (nav) {
+    nav.classList.toggle('scrolled', y > 14);
   }
 
-  const y = window.scrollY;
-  const viewportCenter = window.innerHeight / 2;
+  if (cinematicHero) {
+    const heroTravel = Math.max(window.innerHeight * 0.9, cinematicHero.offsetHeight * 0.66);
+    const progress = clamp(y / heroTravel, 0, 1);
+    cinematicHero.style.setProperty('--entry-progress', progress.toFixed(3));
+  }
 
   parallaxNodes.forEach((node) => {
     const speed = Number(node.dataset.speed || 0.1);
@@ -130,7 +161,6 @@ const handleParallax = () => {
     const value = progress.toFixed(3);
     node.style.setProperty('--divider-progress', value);
 
-    // Decorative lines live in inner wrappers; keep the variable in sync there too.
     const innerTargets = node.querySelectorAll('.contact-art-card, .footer-modern');
     innerTargets.forEach((target) => {
       target.style.setProperty('--divider-progress', value);
@@ -145,18 +175,49 @@ const handleParallax = () => {
     floatingGlass.style.transform = `translate3d(0, ${drift}px, 0) rotate(${rotate}deg) scale(${scale})`;
   }
 
-  ticking = false;
+};
+
+let smoothY = window.scrollY;
+let targetY = window.scrollY;
+let rafId = null;
+
+const animate = () => {
+  targetY = window.scrollY;
+
+  if (prefersReducedMotion) {
+    smoothY = targetY;
+  } else {
+    smoothY += (targetY - smoothY) * 0.12;
+    if (Math.abs(targetY - smoothY) < 0.12) {
+      smoothY = targetY;
+    }
+  }
+
+  updateVisuals(smoothY);
+
+  if (!prefersReducedMotion && Math.abs(targetY - smoothY) > 0.12) {
+    rafId = requestAnimationFrame(animate);
+    return;
+  }
+
+  rafId = null;
+};
+
+const queueAnimation = () => {
+  if (rafId !== null) return;
+  rafId = requestAnimationFrame(animate);
 };
 
 window.addEventListener(
   'scroll',
   () => {
-    if (ticking) return;
-    ticking = true;
-    requestAnimationFrame(handleParallax);
+    targetY = window.scrollY;
+    queueAnimation();
   },
   { passive: true }
 );
+
+window.addEventListener('resize', queueAnimation, { passive: true });
 
 const currentYear = new Date().getFullYear();
 yearNodes.forEach((node) => {
@@ -180,6 +241,7 @@ window.addEventListener('pageshow', () => {
   reservationForms.forEach((form) => {
     clearReservationForm(form);
   });
+  queueAnimation();
 });
 
-handleParallax();
+queueAnimation();
