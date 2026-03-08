@@ -13,7 +13,7 @@ const eventTargets = Array.from(document.querySelectorAll('[data-events-target]'
 const yearNodes = document.querySelectorAll('[data-year]');
 const reservationForms = document.querySelectorAll('[data-reservation-form]');
 const cinematicHero = document.querySelector('.hero-refined, .hero-cinematic');
-const navTriggerSection = document.querySelector('.hero-entry, .page-hero, .hero');
+const navTriggerSection = document.querySelector('.hero-entry, .page-hero, .hero, .about-parallax');
 const aboutParallaxSection = document.querySelector('[data-about-parallax]');
 let floatingHeroLogo = document.querySelector('.hero-logo-float');
 const homeEntryBody = document.body.classList.contains('home-entry') ? document.body : null;
@@ -221,23 +221,88 @@ const ensureSubpageFloatingLogo = () => {
 const initAboutParallax = () => {
   if (!aboutParallaxSection) return;
 
-  const gsapLib = window.gsap;
-  const scrollTriggerPlugin = window.ScrollTrigger;
-  if (!gsapLib || !scrollTriggerPlugin) return;
-
+  const composition = aboutParallaxSection.querySelector('.logo-composition');
   const logo = aboutParallaxSection.querySelector('.sniff-logo');
   const leftGlass = aboutParallaxSection.querySelector('.glass-left');
   const rightGlass = aboutParallaxSection.querySelector('.glass-right');
   const impact = aboutParallaxSection.querySelector('.impact');
-  if (!logo || !leftGlass || !rightGlass || !impact) return;
+  const flash = aboutParallaxSection.querySelector('.clink-flash');
+  if (!composition || !logo || !leftGlass || !rightGlass || !impact || !flash) return;
+
+  const gsapLib = window.gsap;
+  const scrollTriggerPlugin = window.ScrollTrigger;
+
+  if (!gsapLib || !scrollTriggerPlugin) {
+    leftGlass.style.opacity = '1';
+    rightGlass.style.opacity = '1';
+    leftGlass.style.transform = 'translateX(-50%)';
+    rightGlass.style.transform = 'translateX(-50%)';
+    impact.style.transform = 'translateX(-50%)';
+    impact.style.opacity = '1';
+    logo.style.transform = 'translateX(-50%)';
+    logo.style.opacity = '1';
+    flash.style.opacity = '0';
+    return;
+  }
 
   gsapLib.registerPlugin(scrollTriggerPlugin);
 
+  let audioCtx = null;
+  let canPlayClink = false;
+
+  const unlockClinkSound = () => {
+    if (canPlayClink) return;
+    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+    if (!AudioCtx) return;
+    try {
+      audioCtx = new AudioCtx();
+      canPlayClink = true;
+      if (audioCtx.state === 'suspended') {
+        audioCtx.resume().catch(() => {});
+      }
+    } catch (_) {
+      canPlayClink = false;
+    }
+  };
+
+  window.addEventListener('pointerdown', unlockClinkSound, { once: true, passive: true });
+  window.addEventListener('keydown', unlockClinkSound, { once: true });
+
+  const playClinkSound = () => {
+    if (!canPlayClink || !audioCtx) return;
+    try {
+      if (audioCtx.state === 'suspended') {
+        audioCtx.resume().catch(() => {});
+      }
+      const now = audioCtx.currentTime;
+      const gain = audioCtx.createGain();
+      gain.connect(audioCtx.destination);
+      gain.gain.setValueAtTime(0.0001, now);
+      gain.gain.exponentialRampToValueAtTime(0.14, now + 0.01);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.2);
+
+      const createTone = (frequency, startOffset, endOffset) => {
+        const osc = audioCtx.createOscillator();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(frequency, now + startOffset);
+        osc.connect(gain);
+        osc.start(now + startOffset);
+        osc.stop(now + endOffset);
+      };
+
+      createTone(1360, 0, 0.12);
+      createTone(1880, 0.012, 0.18);
+    } catch (_) {
+      // Ignore audio failures silently.
+    }
+  };
+
   if (prefersReducedMotion) {
-    gsapLib.set(leftGlass, { x: '-8.5vw', y: '11vh', rotation: -3 });
-    gsapLib.set(rightGlass, { x: '8.5vw', y: '11vh', rotation: 3 });
-    gsapLib.set(impact, { autoAlpha: 1, y: '-1.5vh', scale: 1 });
-    gsapLib.set(logo, { autoAlpha: 1, y: '-30vh', scale: 1 });
+    gsapLib.set(leftGlass, { x: 0, y: 0, rotation: 0 });
+    gsapLib.set(rightGlass, { x: 0, y: 0, rotation: 0 });
+    gsapLib.set(impact, { autoAlpha: 1, x: 0, y: 0, scale: 1 });
+    gsapLib.set(logo, { autoAlpha: 1, y: 0, scale: 1 });
+    gsapLib.set(flash, { autoAlpha: 0, scale: 1 });
     return;
   }
 
@@ -249,105 +314,131 @@ const initAboutParallax = () => {
     },
     (context) => {
       const isMobile = Boolean(context.conditions?.mobile);
-
-      const startGap = () => window.innerWidth * (isMobile ? 0.31 : 0.36);
-      const approachGap = () => window.innerWidth * (isMobile ? 0.14 : 0.155);
-      const clinkGap = () => window.innerWidth * (isMobile ? 0.108 : 0.118);
-      const finalGap = () => window.innerWidth * (isMobile ? 0.118 : 0.13);
-      const startY = () => window.innerHeight * (isMobile ? 0.23 : 0.2);
-      const meetY = () => window.innerHeight * (isMobile ? 0.12 : 0.1);
-      const logoRevealY = () => -window.innerHeight * (isMobile ? 0.235 : 0.285);
-      const impactStartY = () => window.innerHeight * 0.22;
+      const stageWidth = () => composition.getBoundingClientRect().width || window.innerWidth;
+      const stageHeight = () => composition.getBoundingClientRect().height || window.innerHeight;
+      const offscreenX = () => stageWidth() * (isMobile ? 0.82 : 0.74);
+      const approachX = () => stageWidth() * (isMobile ? 0.038 : 0.03);
+      const bounceX = () => stageWidth() * (isMobile ? 0.022 : 0.016);
+      const bounceLift = () => stageHeight() * (isMobile ? 0.012 : 0.01);
 
       gsapLib.set(leftGlass, {
-        x: () => -startGap(),
-        y: () => startY(),
-        rotation: -8,
-        transformOrigin: '92% 90%',
+        x: () => -offscreenX(),
+        y: () => stageHeight() * 0.024,
+        rotation: -7,
+        transformOrigin: '88% 84%',
       });
       gsapLib.set(rightGlass, {
-        x: () => startGap(),
-        y: () => startY(),
-        rotation: 8,
-        transformOrigin: '8% 90%',
+        x: () => offscreenX(),
+        y: () => stageHeight() * 0.024,
+        rotation: 7,
+        transformOrigin: '12% 84%',
       });
       gsapLib.set(impact, {
         autoAlpha: 0,
-        scale: 0.8,
-        y: () => impactStartY(),
+        x: 0,
+        y: 20,
+        scale: 0.86,
         transformOrigin: '50% 100%',
       });
       gsapLib.set(logo, {
         autoAlpha: 0,
-        y: () => window.innerHeight * 0.48,
-        scale: 0.95,
+        y: 92,
+        scale: 0.94,
+        transformOrigin: '50% 50%',
+      });
+      gsapLib.set(flash, {
+        autoAlpha: 0,
+        scale: 0.7,
         transformOrigin: '50% 50%',
       });
 
+      let previousProgress = 0;
+      let clinkArmed = true;
+
       const timeline = gsapLib.timeline({
-        defaults: { ease: 'power3.out' },
+        defaults: { ease: 'power3.out', overwrite: 'auto' },
         scrollTrigger: {
           trigger: aboutParallaxSection,
           start: 'top top',
-          end: '+=165%',
-          scrub: 1,
+          end: '+=175%',
+          scrub: 1.05,
           pin: true,
           anticipatePin: 1,
           invalidateOnRefresh: true,
+          onUpdate: (self) => {
+            const progress = self.progress;
+            if (progress >= 0.5 && previousProgress < 0.5 && clinkArmed) {
+              playClinkSound();
+              clinkArmed = false;
+            }
+            if (progress <= 0.34) {
+              clinkArmed = true;
+            }
+            previousProgress = progress;
+          },
         },
       });
 
-      // Phase 1: glasses travel toward center and become more upright.
+      // Phase 1: glasses enter from off-screen and approach center.
       timeline
         .to(
           leftGlass,
-          { x: () => -approachGap(), y: () => meetY(), rotation: -2, duration: 0.5, ease: 'power4.out' },
+          { x: () => approachX(), y: 0, rotation: -1.2, duration: 0.46, ease: 'power3.out' },
           0
         )
         .to(
           rightGlass,
-          { x: () => approachGap(), y: () => meetY(), rotation: 2, duration: 0.5, ease: 'power4.out' },
+          { x: () => -approachX(), y: 0, rotation: 1.2, duration: 0.46, ease: 'power3.out' },
           0
         );
 
-      // Phase 2: clink impact + bottom effect rise (2.png).
+      // Phase 2: clink moment with a tiny bounce.
       timeline
         .to(
           leftGlass,
-          { x: () => -clinkGap(), y: () => meetY() - window.innerHeight * 0.016, rotation: -0.5, duration: 0.1 },
+          { x: () => bounceX(), y: () => -bounceLift(), rotation: -0.2, duration: 0.09, ease: 'power2.out' },
           0.5
         )
         .to(
           rightGlass,
-          { x: () => clinkGap(), y: () => meetY() - window.innerHeight * 0.016, rotation: 0.5, duration: 0.1 },
+          { x: () => -bounceX(), y: () => -bounceLift(), rotation: 0.2, duration: 0.09, ease: 'power2.out' },
           0.5
         )
         .to(
           leftGlass,
-          { x: () => -finalGap(), y: () => meetY() + window.innerHeight * 0.002, rotation: 0, duration: 0.22, ease: 'power3.out' },
-          0.6
+          { x: 0, y: 0, rotation: 0, duration: 0.18, ease: 'power2.out' },
+          0.59
         )
         .to(
           rightGlass,
-          { x: () => finalGap(), y: () => meetY() + window.innerHeight * 0.002, rotation: 0, duration: 0.22, ease: 'power3.out' },
-          0.6
+          { x: 0, y: 0, rotation: 0, duration: 0.18, ease: 'power2.out' },
+          0.59
         )
+        .fromTo(
+          flash,
+          { autoAlpha: 0, scale: 0.72 },
+          { autoAlpha: 0.95, scale: 1.32, duration: 0.08, ease: 'power2.out', repeat: 1, yoyo: true },
+          0.56
+        )
+
+        // Phase 3: steam rises in above glasses.
         .to(
           impact,
-          { autoAlpha: 0.96, scale: 1, y: () => window.innerHeight * 0.012, duration: 0.2, ease: 'power4.out' },
-          0.58
-        )
-        .to(
-          impact,
-          { autoAlpha: 1, scale: 1.04, y: () => -window.innerHeight * 0.018, duration: 0.2, ease: 'power3.out' },
-          0.78
+          {
+            autoAlpha: 1,
+            scale: 1,
+            y: 0,
+            duration: 0.24,
+            ease: 'power3.out',
+          },
+          0.64
         );
 
-      // Phase 3: logo rises from below with subtle scale and ease-out.
+      // Phase 4: logo rises from below.
       timeline.to(
         logo,
-        { autoAlpha: 1, y: () => logoRevealY(), scale: 1, duration: 0.44, ease: 'power4.out' },
-        0.7
+        { autoAlpha: 1, y: 0, scale: 1, duration: 0.36, ease: 'power3.out' },
+        0.74
       );
 
       return () => {

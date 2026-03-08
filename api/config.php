@@ -7,7 +7,7 @@ return [
     'notify_email' => 'info@sniffalsancak.com',
 
     // Sunucudaki giden mail adresi (hosting panelinde tanimli bir adres kullanin).
-    'from_email' => 'noreply@sniffalsancak.com',
+    'from_email' => 'admin@sniffalsancak.com',
     'from_name' => 'Sniff Alsancak',
 
     // Rezervasyon satir satir JSON olarak buraya yazilir.
@@ -21,4 +21,3 @@ return [
     'timezone' => 'Europe/Istanbul',
     'subject_prefix' => '[Sniff Rezervasyon]',
 ];
-
