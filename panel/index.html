@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sniff Alsancak Panel</title>
+  <meta name="robots" content="noindex,nofollow">
+  <link rel="icon" type="image/svg+xml" href="../assets/favicon-cocktail.svg">
+  <link rel="stylesheet" href="../assets/style.css">
+  <script defer src="../assets/panel.js"></script>
+</head>
+<body class="admin-panel-page">
+  <main class="admin-shell">
+    <header class="admin-topbar">
+      <div>
+        <p class="admin-kicker">Sniff Alsancak</p>
+        <h1>Yönetim Paneli</h1>
+      </div>
+      <div class="admin-topbar-actions">
+        <a class="btn btn-ghost" href="../index.html">Siteye Dön</a>
+        <button type="button" class="btn btn-primary" data-panel-logout hidden>Çıkış Yap</button>
+      </div>
+    </header>
+
+    <section class="admin-login" data-panel-login>
+      <article class="admin-card admin-card-narrow">
+        <h2>Admin Girişi</h2>
+        <p>Kullanıcı adı: <strong>admin</strong> | Şifre: <strong>Sniff34.</strong></p>
+        <form class="admin-form" id="panel-login-form" autocomplete="off">
+          <label>
+            Kullanıcı Adı
+            <input type="text" name="username" required>
+          </label>
+          <label>
+            Şifre
+            <input type="password" name="password" required>
+          </label>
+          <button type="submit" class="btn btn-primary">Panele Giriş Yap</button>
+          <p class="admin-note" data-login-note></p>
+        </form>
+      </article>
+    </section>
+
+    <section class="admin-dashboard" data-panel-dashboard hidden>
+      <div class="admin-stats">
+        <article class="admin-stat-card">
+          <span>Toplam Rezervasyon</span>
+          <strong data-stat-reservations>0</strong>
+        </article>
+        <article class="admin-stat-card">
+          <span>Aktif Etkinlik</span>
+          <strong data-stat-events>0</strong>
+        </article>
+      </div>
+
+      <div class="admin-grid">
+        <article class="admin-card">
+          <div class="admin-card-head">
+            <h2>Rezervasyonlar</h2>
+            <button type="button" class="btn btn-ghost" data-clear-reservations>Tümünü Sil</button>
+          </div>
+          <div class="admin-table-wrap">
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th>Oluşturulma</th>
+                  <th>Ad Soyad</th>
+                  <th>Telefon</th>
+                  <th>Kişi</th>
+                  <th>Tarih</th>
+                  <th>Saat</th>
+                  <th>Not</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody data-reservations-body></tbody>
+            </table>
+          </div>
+        </article>
+
+        <article class="admin-card">
+          <div class="admin-card-head">
+            <h2>Etkinlik Yönetimi</h2>
+            <span class="admin-hint">Eklenen etkinlikler ana sitede otomatik görünür.</span>
+          </div>
+          <form class="admin-form admin-form-grid" id="event-form" autocomplete="off">
+            <input type="hidden" name="event_id">
+            <label>
+              Etiket / Zaman
+              <input type="text" name="meta" required placeholder="Her Cuma • 22:00">
+            </label>
+            <label>
+              Başlık
+              <input type="text" name="title" required placeholder="DJ Gecesi">
+            </label>
+            <label class="full">
+              Açıklama
+              <textarea name="description" rows="3" required placeholder="Etkinlik açıklaması"></textarea>
+            </label>
+            <label class="full">
+              Görsel URL (Opsiyonel)
+              <input type="url" name="image" placeholder="https://...">
+            </label>
+            <label class="full">
+              Yeni Etkinlik Fotoğrafı
+              <input type="file" name="image_file" accept="image/*">
+              <small class="admin-field-hint">JPG, PNG veya WebP dosyası seçebilirsiniz.</small>
+            </label>
+            <div class="admin-form-actions full">
+              <button type="submit" class="btn btn-primary">Kaydet</button>
+              <button type="button" class="btn btn-ghost" data-reset-event-form>Temizle</button>
+            </div>
+            <p class="admin-note full" data-event-note></p>
+          </form>
+
+          <div class="admin-table-wrap">
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th>Etiket</th>
+                  <th>Başlık</th>
+                  <th>Açıklama</th>
+                  <th>Görsel</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody data-events-body></tbody>
+            </table>
+          </div>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <div class="admin-image-modal" data-image-modal hidden>
+    <div class="admin-image-modal-backdrop" data-image-modal-close></div>
+    <figure class="admin-image-modal-dialog" role="dialog" aria-modal="true" aria-label="Etkinlik görseli önizleme">
+      <button type="button" class="admin-image-modal-close" data-image-modal-close aria-label="Kapat">Kapat</button>
+      <img src="" alt="Etkinlik görseli" data-image-modal-img loading="lazy">
+    </figure>
+  </div>
+</body>
+</html>
