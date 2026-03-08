@@ -51,6 +51,10 @@
           <span>Aktif Etkinlik</span>
           <strong data-stat-events>0</strong>
         </article>
+        <article class="admin-stat-card">
+          <span>Menü Ürünü</span>
+          <strong data-stat-menu-items>0</strong>
+        </article>
       </div>
 
       <div class="admin-grid">
@@ -125,6 +129,57 @@
                 </tr>
               </thead>
               <tbody data-events-body></tbody>
+            </table>
+          </div>
+        </article>
+
+        <article class="admin-card">
+          <div class="admin-card-head">
+            <h2>Menü Yönetimi</h2>
+            <span class="admin-hint">Buradan eklediğin ürünler `Menü` sayfasında görünür.</span>
+          </div>
+          <form class="admin-form admin-form-grid" id="menu-form" autocomplete="off">
+            <input type="hidden" name="menu_item_id">
+            <label>
+              Ürün Adı
+              <input type="text" name="title" required placeholder="Velvet Negroni">
+            </label>
+            <label>
+              Fiyat (Opsiyonel)
+              <input type="text" name="price" placeholder="₺450">
+            </label>
+            <label class="full">
+              Açıklama
+              <textarea name="description" rows="3" required placeholder="Kısa ürün açıklaması"></textarea>
+            </label>
+            <label class="full">
+              Görsel URL (Opsiyonel)
+              <input type="url" name="image" placeholder="https://...">
+            </label>
+            <label class="full">
+              Yeni Ürün Fotoğrafı
+              <input type="file" name="image_file" accept="image/*">
+              <small class="admin-field-hint">JPG, PNG veya WebP dosyası seçebilirsiniz.</small>
+            </label>
+            <div class="admin-form-actions full">
+              <button type="submit" class="btn btn-primary">Kaydet</button>
+              <button type="button" class="btn btn-ghost" data-reset-menu-form>Temizle</button>
+            </div>
+            <p class="admin-note full" data-menu-note></p>
+          </form>
+
+          <div class="admin-table-wrap">
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th>Ad</th>
+                  <th>Fiyat</th>
+                  <th>Açıklama</th>
+                  <th>Görsel</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody data-menu-items-body></tbody>
             </table>
           </div>
         </article>
