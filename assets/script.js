@@ -10,6 +10,7 @@ const tileParallaxNodes = document.querySelectorAll('.gallery-tile');
 const scrollDividerNodes = document.querySelectorAll('[data-scroll-divider]');
 const cinematicParallaxContainers = document.querySelectorAll('[data-cinematic-parallax]');
 const eventTargets = Array.from(document.querySelectorAll('[data-events-target]'));
+const menuTargets = Array.from(document.querySelectorAll('[data-menu-target]'));
 const yearNodes = document.querySelectorAll('[data-year]');
 const reservationForms = document.querySelectorAll('[data-reservation-form]');
 const cinematicHero = document.querySelector('.hero-refined, .hero-cinematic');
@@ -22,6 +23,7 @@ const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)
 const cookiePreferenceKey = 'sniff_cookie_preference_v1';
 const reservationStorageKey = 'sniff_reservations_v1';
 const eventsStorageKey = 'sniff_events_v1';
+const menuStorageKey = 'sniff_menu_items_v1';
 const eventsSyncKey = 'sniff_events_sync_v1';
 const eventsChannelKey = 'sniff_events_channel_v1';
 const reservationStorageLimit = 500;
@@ -48,6 +50,65 @@ const defaultEvents = [
     title: 'Hafta Sonu Partisi',
     description: 'Küratörlü müzik akışı ve şehirli parti temposu.',
     image: 'https://images.unsplash.com/photo-1745060829956-dcd14b3511cb?auto=format&fit=crop&fm=jpg&ixlib=rb-4.1.0&q=80&w=2400',
+  },
+];
+
+const defaultMenuItems = [
+  {
+    id: 'menu_velvet_negroni',
+    title: 'Velvet Negroni',
+    description: 'Barrel gin, kırmızı bitter, vermut ve kakao-narenciye parfümü.',
+    image: 'https://images.unsplash.com/photo-1749314374163-185677265d63?auto=format&fit=crop&fm=jpg&ixlib=rb-4.1.0&q=80&w=2400',
+    price: '',
+  },
+  {
+    id: 'menu_midnight_citrus',
+    title: 'Midnight Citrus',
+    description: 'Yuzu, bergamot köpük ve canlı limon yağları.',
+    image: 'https://images.unsplash.com/photo-1671741967944-cb60915f5823?auto=format&fit=crop&fm=jpg&ixlib=rb-4.1.0&q=80&w=2400',
+    price: '',
+  },
+  {
+    id: 'menu_golden_bloom',
+    title: 'Golden Bloom',
+    description: 'Reposado tekila, safran ve passionfruit dengesi.',
+    image: 'https://images.unsplash.com/photo-1745052811236-a56a0f8718d1?auto=format&fit=crop&fm=jpg&ixlib=rb-4.1.0&q=80&w=2400',
+    price: '',
+  },
+  {
+    id: 'menu_smoked_garden',
+    title: 'Smoked Garden',
+    description: 'Mezcal, taze fesleğen, salatalık ve aromatik is.',
+    image: 'https://images.unsplash.com/photo-1761388545625-b233a6f35628?auto=format&fit=crop&fm=jpg&ixlib=rb-4.1.0&q=80&w=2400',
+    price: '',
+  },
+  {
+    id: 'menu_ruby_boulevard',
+    title: 'Ruby Boulevard',
+    description: 'Bourbon, kiraz reduksiyonu ve baharatlı bitiş.',
+    image: 'https://images.unsplash.com/photo-1690021416125-56f8464a8b01?auto=format&fit=crop&fm=jpg&ixlib=rb-4.1.0&q=80&w=2400',
+    price: '',
+  },
+  {
+    id: 'menu_neon_spritz',
+    title: 'Neon Spritz',
+    description: 'Mürver çiçeği, prosecco ve narenciye sisi.',
+    image: 'https://images.unsplash.com/photo-1690021416431-d10365a06a3d?auto=format&fit=crop&fm=jpg&ixlib=rb-4.1.0&q=80&w=2400',
+    price: '',
+  },
+  {
+    id: 'menu_saffron_sour',
+    title: 'Saffron Sour',
+    description: 'Safran şurubu, beyaz şeftali ve ipeksi doku.',
+    image: 'https://images.unsplash.com/photo-1632558608598-f90ec7b026dd?auto=format&fit=crop&fm=jpg&ixlib=rb-4.1.0&q=80&w=2400',
+    price: '',
+  },
+  {
+    id: 'menu_after_dark_martini',
+    title: 'After Dark Martini',
+    description: 'Espresso likörü, vanilya is dokusu ve kakao.',
+    image: 'https://images.unsplash.com/photo-1745060829956-dcd14b3511cb?auto=format&fit=crop&fm=jpg&ixlib=rb-4.1.0&q=80&w=2400',
+    price: '',
   },
 ];
 
@@ -83,9 +144,9 @@ const writeStorageArray = (key, data) => {
   }
 };
 
-const sanitizeImage = (value) => {
+const sanitizeImage = (value, fallbackImage = defaultEvents[0].image) => {
   const cleaned = String(value || '').trim().replace(/["'<>`]/g, '');
-  return cleaned || defaultEvents[0].image;
+  return cleaned || fallbackImage;
 };
 
 const normalizeEvent = (event, index) => {
@@ -109,6 +170,29 @@ const getEvents = () => {
   if (normalized.length > 0) return normalized;
   writeStorageArray(eventsStorageKey, defaultEvents);
   return defaultEvents;
+};
+
+const normalizeMenuItem = (item, index) => {
+  if (!item || typeof item !== 'object') return null;
+  const title = sanitizeText(item.title, 90);
+  const description = sanitizeText(item.description, 220);
+  if (!title || !description) return null;
+  return {
+    id: sanitizeText(item.id, 64) || `menu_${Date.now()}_${index}`,
+    title,
+    description,
+    image: sanitizeImage(item.image, defaultMenuItems[0].image),
+    price: sanitizeText(item.price, 32),
+  };
+};
+
+const getMenuItems = () => {
+  const normalized = readStorageArray(menuStorageKey)
+    .map((item, index) => normalizeMenuItem(item, index))
+    .filter(Boolean);
+  if (normalized.length > 0) return normalized;
+  writeStorageArray(menuStorageKey, defaultMenuItems);
+  return [...defaultMenuItems];
 };
 
 const getReservations = () =>
@@ -173,6 +257,34 @@ const createEventCard = (event) => {
   return article;
 };
 
+const createMenuCard = (item) => {
+  const article = document.createElement('article');
+  article.className = 'photo-card';
+  article.setAttribute('data-reveal', '');
+  article.style.setProperty('--card-image', `url('${sanitizeImage(item.image, defaultMenuItems[0].image)}')`);
+
+  const body = document.createElement('div');
+  body.className = 'card-body';
+
+  const price = sanitizeText(item.price, 32);
+  if (price) {
+    const priceNode = document.createElement('span');
+    priceNode.className = 'menu-price';
+    priceNode.textContent = price;
+    body.appendChild(priceNode);
+  }
+
+  const title = document.createElement('h3');
+  title.textContent = sanitizeText(item.title, 90);
+
+  const description = document.createElement('p');
+  description.textContent = sanitizeText(item.description, 220);
+
+  body.append(title, description);
+  article.appendChild(body);
+  return article;
+};
+
 const renderEvents = () => {
   if (eventTargets.length === 0) return;
   const events = getEvents();
@@ -192,6 +304,28 @@ const renderEvents = () => {
 
     list.forEach((event) => {
       const card = createEventCard(event);
+      target.appendChild(card);
+      observer.observe(card);
+    });
+  });
+};
+
+const renderMenu = () => {
+  if (menuTargets.length === 0) return;
+  const items = getMenuItems();
+  menuTargets.forEach((target) => {
+    target.innerHTML = '';
+
+    if (items.length === 0) {
+      const empty = document.createElement('p');
+      empty.className = 'lead';
+      empty.textContent = 'Henüz menü öğesi eklenmedi.';
+      target.appendChild(empty);
+      return;
+    }
+
+    items.forEach((item) => {
+      const card = createMenuCard(item);
       target.appendChild(card);
       observer.observe(card);
     });
@@ -519,6 +653,7 @@ const observer = new IntersectionObserver(
 
 revealNodes.forEach((node) => observer.observe(node));
 renderEvents();
+renderMenu();
 ensureSubpageFloatingLogo();
 initAboutParallax();
 
@@ -738,11 +873,17 @@ window.addEventListener('storage', (event) => {
   if (event.key === eventsStorageKey || event.key === eventsSyncKey) {
     renderEvents();
   }
+  if (event.key === menuStorageKey) {
+    renderMenu();
+  }
 });
 
 eventsChannel?.addEventListener('message', (event) => {
   if (event?.data?.type === 'events-updated') {
     renderEvents();
+  }
+  if (event?.data?.type === 'menu-updated') {
+    renderMenu();
   }
 });
 
@@ -796,11 +937,13 @@ window.addEventListener('pageshow', () => {
     clearReservationForm(form);
   });
   renderEvents();
+  renderMenu();
   queueAnimation();
 });
 
 window.addEventListener('focus', () => {
   renderEvents();
+  renderMenu();
 });
 
 queueAnimation();

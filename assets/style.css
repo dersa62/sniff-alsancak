@@ -1729,7 +1729,7 @@ main {
 }
 
 .about-parallax-layer.glass-left {
-  left: 39.7%;
+  left: 39.5%;
   bottom: 0;
   height: clamp(210px, 31vh, 350px);
   width: auto;
@@ -1740,7 +1740,7 @@ main {
 }
 
 .about-parallax-layer.glass-right {
-  left: 49.7%;
+  left: 49.5%;
   bottom: 0;
   height: clamp(176px, 26vh, 290px);
   width: auto;
@@ -1762,7 +1762,7 @@ main {
 }
 
 .about-parallax-layer.impact {
-  left: 44.7%;
+  left: 44.5%;
   bottom: 25.8vh;
   width: clamp(15px, 1.7vw, 24px);
   height: auto;
@@ -1774,7 +1774,7 @@ main {
 
 .clink-flash {
   position: absolute;
-  left: 44.7%;
+  left: 44.5%;
   bottom: 25.4vh;
   width: clamp(62px, 8vw, 96px);
   height: clamp(62px, 8vw, 96px);
@@ -2123,6 +2123,19 @@ main {
   padding: 0.3rem 0.75rem;
   font-size: 0.73rem;
   letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-weight: 800;
+}
+
+.menu-price {
+  display: inline-block;
+  margin: 0 0 0.52rem;
+  color: #231709;
+  background: linear-gradient(120deg, #ffe08a, #ffd35a);
+  border-radius: 999px;
+  padding: 0.28rem 0.72rem;
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
   font-weight: 800;
 }
@@ -3075,17 +3088,17 @@ footer {
   }
 
   .about-parallax-layer.glass-left {
-    left: 39.2%;
+    left: 39%;
     height: clamp(180px, 27vh, 280px);
   }
 
   .about-parallax-layer.glass-right {
-    left: 50.2%;
+    left: 50%;
     height: clamp(152px, 23vh, 236px);
   }
 
   .about-parallax-layer.impact {
-    left: 44.2%;
+    left: 44%;
     bottom: 22.2vh;
     width: clamp(13px, 1.8vw, 20px);
   }
@@ -3096,7 +3109,7 @@ footer {
   }
 
   .clink-flash {
-    left: 44.2%;
+    left: 44%;
     bottom: 22vh;
   }
 
@@ -3270,17 +3283,17 @@ footer {
   }
 
   .about-parallax-layer.glass-left {
-    left: 38.7%;
+    left: 38.5%;
     height: clamp(150px, 23vh, 212px);
   }
 
   .about-parallax-layer.glass-right {
-    left: 50.7%;
+    left: 50.5%;
     height: clamp(128px, 19vh, 176px);
   }
 
   .about-parallax-layer.impact {
-    left: 43.7%;
+    left: 43.5%;
     bottom: 19.6vh;
     width: clamp(11px, 2.5vw, 16px);
   }
@@ -3291,7 +3304,7 @@ footer {
   }
 
   .clink-flash {
-    left: 43.7%;
+    left: 43.5%;
     bottom: 19.2vh;
   }
 
@@ -3520,7 +3533,7 @@ footer {
 
 .admin-stats {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 0.85rem;
 }
 
