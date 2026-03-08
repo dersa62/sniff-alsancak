@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Cocktail glass icon">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#3a0a16"/>
+      <stop offset="1" stop-color="#1a060d"/>
+    </linearGradient>
+    <linearGradient id="drink" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#ffd97a"/>
+      <stop offset="1" stop-color="#f1b64a"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="64" height="64" rx="14" fill="url(#bg)"/>
+
+  <path d="M16 16h32L34 32v10h8v4H22v-4h8V32L16 16z" fill="none" stroke="#ffe8b7" stroke-width="2.6" stroke-linejoin="round"/>
+  <path d="M20 16h24l-12 12z" fill="url(#drink)" opacity="0.94"/>
+  <circle cx="44" cy="19" r="3" fill="#a51e3b"/>
+  <path d="M44 19l6-6" stroke="#e5cf9d" stroke-width="2" stroke-linecap="round"/>
+</svg>

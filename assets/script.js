@@ -9,12 +9,47 @@ const cardParallaxNodes = document.querySelectorAll('.photo-card');
 const tileParallaxNodes = document.querySelectorAll('.gallery-tile');
 const scrollDividerNodes = document.querySelectorAll('[data-scroll-divider]');
 const cinematicParallaxContainers = document.querySelectorAll('[data-cinematic-parallax]');
+const eventTargets = Array.from(document.querySelectorAll('[data-events-target]'));
 const yearNodes = document.querySelectorAll('[data-year]');
 const reservationForms = document.querySelectorAll('[data-reservation-form]');
-const floatingGlass = document.querySelector('.floating-glass');
 const cinematicHero = document.querySelector('.hero-refined, .hero-cinematic');
+const navTriggerSection = document.querySelector('.hero-entry, .page-hero, .hero');
+const aboutParallaxSection = document.querySelector('[data-about-parallax]');
+let floatingHeroLogo = document.querySelector('.hero-logo-float');
+const homeEntryBody = document.body.classList.contains('home-entry') ? document.body : null;
+const isHomeEntryPage = Boolean(homeEntryBody);
 const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 const cookiePreferenceKey = 'sniff_cookie_preference_v1';
+const reservationStorageKey = 'sniff_reservations_v1';
+const eventsStorageKey = 'sniff_events_v1';
+const eventsSyncKey = 'sniff_events_sync_v1';
+const eventsChannelKey = 'sniff_events_channel_v1';
+const reservationStorageLimit = 500;
+const eventsChannel = typeof BroadcastChannel !== 'undefined' ? new BroadcastChannel(eventsChannelKey) : null;
+
+const defaultEvents = [
+  {
+    id: 'evt_dj_geceleri',
+    meta: 'Her Cuma • 22:00',
+    title: 'DJ Gecesi',
+    description: 'Melodik setler, yüksek enerji ve kırmızı-neon lounge atmosferi.',
+    image: 'https://images.unsplash.com/photo-1690021416125-56f8464a8b01?auto=format&fit=crop&fm=jpg&ixlib=rb-4.1.0&q=80&w=2400',
+  },
+  {
+    id: 'evt_imza_kokteyl',
+    meta: 'Her Cumartesi • 21:30',
+    title: 'İmza Kokteyl Gecesi',
+    description: 'Sınırlı sayıda hazırlanan özel tariflerle konsept gece.',
+    image: 'https://images.unsplash.com/photo-1749314374163-185677265d63?auto=format&fit=crop&fm=jpg&ixlib=rb-4.1.0&q=80&w=2400',
+  },
+  {
+    id: 'evt_hafta_sonu_partisi',
+    meta: 'Hafta Sonu • Geç Saatler',
+    title: 'Hafta Sonu Partisi',
+    description: 'Küratörlü müzik akışı ve şehirli parti temposu.',
+    image: 'https://images.unsplash.com/photo-1745060829956-dcd14b3511cb?auto=format&fit=crop&fm=jpg&ixlib=rb-4.1.0&q=80&w=2400',
+  },
+];
 
 const cinematicGroups = Array.from(cinematicParallaxContainers).map((container) => ({
   container,
@@ -25,6 +60,303 @@ const cinematicGroups = Array.from(cinematicParallaxContainers).map((container) 
 }));
 
 const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
+
+const sanitizeText = (value, maxLength = 220) => String(value || '').replace(/\s+/g, ' ').trim().slice(0, maxLength);
+
+const readStorageArray = (key) => {
+  try {
+    const raw = localStorage.getItem(key);
+    if (!raw) return [];
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? parsed : [];
+  } catch (_) {
+    return [];
+  }
+};
+
+const writeStorageArray = (key, data) => {
+  try {
+    localStorage.setItem(key, JSON.stringify(data));
+    return true;
+  } catch (_) {
+    return false;
+  }
+};
+
+const sanitizeImage = (value) => {
+  const cleaned = String(value || '').trim().replace(/["'<>`]/g, '');
+  return cleaned || defaultEvents[0].image;
+};
+
+const normalizeEvent = (event, index) => {
+  if (!event || typeof event !== 'object') return null;
+  const title = sanitizeText(event.title, 90);
+  const description = sanitizeText(event.description, 220);
+  if (!title || !description) return null;
+  return {
+    id: sanitizeText(event.id, 64) || `evt_${Date.now()}_${index}`,
+    meta: sanitizeText(event.meta, 70) || 'Özel Etkinlik',
+    title,
+    description,
+    image: sanitizeImage(event.image),
+  };
+};
+
+const getEvents = () => {
+  const normalized = readStorageArray(eventsStorageKey)
+    .map((event, index) => normalizeEvent(event, index))
+    .filter(Boolean);
+  if (normalized.length > 0) return normalized;
+  writeStorageArray(eventsStorageKey, defaultEvents);
+  return defaultEvents;
+};
+
+const getReservations = () =>
+  readStorageArray(reservationStorageKey).filter(
+    (item) => item && typeof item === 'object' && sanitizeText(item.id, 80)
+  );
+
+const persistReservation = (reservation) => {
+  const reservations = getReservations();
+  reservations.unshift(reservation);
+  if (reservations.length > reservationStorageLimit) {
+    reservations.length = reservationStorageLimit;
+  }
+  writeStorageArray(reservationStorageKey, reservations);
+};
+
+const submitReservationToEndpoint = async (endpoint, reservation) => {
+  const response = await fetch(endpoint, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+    },
+    body: JSON.stringify(reservation),
+  });
+
+  let payload = null;
+  try {
+    payload = await response.json();
+  } catch (_) {
+    payload = null;
+  }
+
+  if (!response.ok || !payload || payload.ok !== true) {
+    throw new Error((payload && payload.error) || 'Rezervasyon sunucuya iletilemedi.');
+  }
+
+  return payload;
+};
+
+const createEventCard = (event) => {
+  const article = document.createElement('article');
+  article.className = 'photo-card';
+  article.setAttribute('data-reveal', '');
+  article.style.setProperty('--card-image', `url('${sanitizeImage(event.image)}')`);
+
+  const body = document.createElement('div');
+  body.className = 'card-body';
+
+  const meta = document.createElement('span');
+  meta.className = 'event-meta';
+  meta.textContent = sanitizeText(event.meta, 70);
+
+  const title = document.createElement('h3');
+  title.textContent = sanitizeText(event.title, 90);
+
+  const description = document.createElement('p');
+  description.textContent = sanitizeText(event.description, 220);
+
+  body.append(meta, title, description);
+  article.appendChild(body);
+  return article;
+};
+
+const renderEvents = () => {
+  if (eventTargets.length === 0) return;
+  const events = getEvents();
+
+  eventTargets.forEach((target) => {
+    const mode = target.getAttribute('data-events-target') || 'events';
+    const list = mode === 'home' ? events.slice(0, 3) : events;
+    target.innerHTML = '';
+
+    if (list.length === 0) {
+      const empty = document.createElement('p');
+      empty.className = 'lead';
+      empty.textContent = 'Henüz etkinlik eklenmedi.';
+      target.appendChild(empty);
+      return;
+    }
+
+    list.forEach((event) => {
+      const card = createEventCard(event);
+      target.appendChild(card);
+      observer.observe(card);
+    });
+  });
+};
+
+const ensureSubpageFloatingLogo = () => {
+  if (isHomeEntryPage) return;
+  if (!nav || !nav.classList.contains('entry-nav')) return;
+  if (floatingHeroLogo) return;
+
+  const logo = document.createElement('div');
+  logo.className = 'hero-logo-float visible';
+  logo.setAttribute('aria-hidden', 'true');
+  logo.style.setProperty('--logo-progress', '1');
+  logo.innerHTML = '<img src=\"assets/sniff-logo-white.png\" alt=\"\">';
+
+  if (nav.nextSibling) {
+    nav.parentNode?.insertBefore(logo, nav.nextSibling);
+  } else {
+    document.body.appendChild(logo);
+  }
+
+  floatingHeroLogo = logo;
+};
+
+const initAboutParallax = () => {
+  if (!aboutParallaxSection) return;
+
+  const gsapLib = window.gsap;
+  const scrollTriggerPlugin = window.ScrollTrigger;
+  if (!gsapLib || !scrollTriggerPlugin) return;
+
+  const logo = aboutParallaxSection.querySelector('.sniff-logo');
+  const leftGlass = aboutParallaxSection.querySelector('.glass-left');
+  const rightGlass = aboutParallaxSection.querySelector('.glass-right');
+  const impact = aboutParallaxSection.querySelector('.impact');
+  if (!logo || !leftGlass || !rightGlass || !impact) return;
+
+  gsapLib.registerPlugin(scrollTriggerPlugin);
+
+  if (prefersReducedMotion) {
+    gsapLib.set(leftGlass, { x: '-8.5vw', y: '11vh', rotation: -3 });
+    gsapLib.set(rightGlass, { x: '8.5vw', y: '11vh', rotation: 3 });
+    gsapLib.set(impact, { autoAlpha: 1, y: '-1.5vh', scale: 1 });
+    gsapLib.set(logo, { autoAlpha: 1, y: '-30vh', scale: 1 });
+    return;
+  }
+
+  const mm = gsapLib.matchMedia();
+  mm.add(
+    {
+      mobile: '(max-width: 900px)',
+      desktop: '(min-width: 901px)',
+    },
+    (context) => {
+      const isMobile = Boolean(context.conditions?.mobile);
+
+      const startGap = () => window.innerWidth * (isMobile ? 0.31 : 0.36);
+      const approachGap = () => window.innerWidth * (isMobile ? 0.14 : 0.155);
+      const clinkGap = () => window.innerWidth * (isMobile ? 0.108 : 0.118);
+      const finalGap = () => window.innerWidth * (isMobile ? 0.118 : 0.13);
+      const startY = () => window.innerHeight * (isMobile ? 0.23 : 0.2);
+      const meetY = () => window.innerHeight * (isMobile ? 0.12 : 0.1);
+      const logoRevealY = () => -window.innerHeight * (isMobile ? 0.235 : 0.285);
+      const impactStartY = () => window.innerHeight * 0.22;
+
+      gsapLib.set(leftGlass, {
+        x: () => -startGap(),
+        y: () => startY(),
+        rotation: -8,
+        transformOrigin: '92% 90%',
+      });
+      gsapLib.set(rightGlass, {
+        x: () => startGap(),
+        y: () => startY(),
+        rotation: 8,
+        transformOrigin: '8% 90%',
+      });
+      gsapLib.set(impact, {
+        autoAlpha: 0,
+        scale: 0.8,
+        y: () => impactStartY(),
+        transformOrigin: '50% 100%',
+      });
+      gsapLib.set(logo, {
+        autoAlpha: 0,
+        y: () => window.innerHeight * 0.48,
+        scale: 0.95,
+        transformOrigin: '50% 50%',
+      });
+
+      const timeline = gsapLib.timeline({
+        defaults: { ease: 'power3.out' },
+        scrollTrigger: {
+          trigger: aboutParallaxSection,
+          start: 'top top',
+          end: '+=165%',
+          scrub: 1,
+          pin: true,
+          anticipatePin: 1,
+          invalidateOnRefresh: true,
+        },
+      });
+
+      // Phase 1: glasses travel toward center and become more upright.
+      timeline
+        .to(
+          leftGlass,
+          { x: () => -approachGap(), y: () => meetY(), rotation: -2, duration: 0.5, ease: 'power4.out' },
+          0
+        )
+        .to(
+          rightGlass,
+          { x: () => approachGap(), y: () => meetY(), rotation: 2, duration: 0.5, ease: 'power4.out' },
+          0
+        );
+
+      // Phase 2: clink impact + bottom effect rise (2.png).
+      timeline
+        .to(
+          leftGlass,
+          { x: () => -clinkGap(), y: () => meetY() - window.innerHeight * 0.016, rotation: -0.5, duration: 0.1 },
+          0.5
+        )
+        .to(
+          rightGlass,
+          { x: () => clinkGap(), y: () => meetY() - window.innerHeight * 0.016, rotation: 0.5, duration: 0.1 },
+          0.5
+        )
+        .to(
+          leftGlass,
+          { x: () => -finalGap(), y: () => meetY() + window.innerHeight * 0.002, rotation: 0, duration: 0.22, ease: 'power3.out' },
+          0.6
+        )
+        .to(
+          rightGlass,
+          { x: () => finalGap(), y: () => meetY() + window.innerHeight * 0.002, rotation: 0, duration: 0.22, ease: 'power3.out' },
+          0.6
+        )
+        .to(
+          impact,
+          { autoAlpha: 0.96, scale: 1, y: () => window.innerHeight * 0.012, duration: 0.2, ease: 'power4.out' },
+          0.58
+        )
+        .to(
+          impact,
+          { autoAlpha: 1, scale: 1.04, y: () => -window.innerHeight * 0.018, duration: 0.2, ease: 'power3.out' },
+          0.78
+        );
+
+      // Phase 3: logo rises from below with subtle scale and ease-out.
+      timeline.to(
+        logo,
+        { autoAlpha: 1, y: () => logoRevealY(), scale: 1, duration: 0.44, ease: 'power4.out' },
+        0.7
+      );
+
+      return () => {
+        timeline.scrollTrigger?.kill();
+        timeline.kill();
+      };
+    }
+  );
+};
 
 const clearReservationForm = (form) => {
   form.reset();
@@ -69,7 +401,7 @@ const splitTextNode = (node) => {
 splitNodes.forEach(splitTextNode);
 
 revealNodes.forEach((node, index) => {
-  const delay = (index % 8) * 40;
+  const delay = (index % 4) * 14;
   node.style.setProperty('--reveal-delay', `${delay}ms`);
 });
 
@@ -89,24 +421,58 @@ const observer = new IntersectionObserver(
     });
   },
   {
-    threshold: 0.2,
+    threshold: 0.06,
+    rootMargin: '0px 0px -8% 0px',
   }
 );
 
 revealNodes.forEach((node) => observer.observe(node));
+renderEvents();
+ensureSubpageFloatingLogo();
+initAboutParallax();
 
 const updateVisuals = (scrollYValue) => {
   const y = scrollYValue;
+  const rawY = window.scrollY;
   const viewportCenter = window.innerHeight / 2;
+  const triggerSection = navTriggerSection || cinematicHero;
+  const triggerHeight = triggerSection ? triggerSection.offsetHeight || window.innerHeight : window.innerHeight;
+  const transitionTravel = Math.max(window.innerHeight * 0.56, triggerHeight * 0.5);
+  const entryMotionProgress = clamp((rawY - 18) / transitionTravel, 0, 1);
+
+  if (homeEntryBody) {
+    homeEntryBody.classList.toggle('top-fade-active', entryMotionProgress > 0.11);
+  }
 
   if (nav) {
-    nav.classList.toggle('scrolled', y > 14);
+    if (nav.classList.contains('entry-nav') && navTriggerSection) {
+      if (isHomeEntryPage) {
+        nav.style.setProperty('--entry-nav-progress', entryMotionProgress.toFixed(3));
+        nav.classList.toggle('scrolled', entryMotionProgress > 0.01);
+      } else {
+        nav.style.setProperty('--entry-nav-progress', '1');
+        nav.classList.add('scrolled');
+      }
+    } else {
+      nav.classList.toggle('scrolled', rawY > 14);
+    }
   }
 
   if (cinematicHero) {
-    const heroTravel = Math.max(window.innerHeight * 0.9, cinematicHero.offsetHeight * 0.66);
-    const progress = clamp(y / heroTravel, 0, 1);
+    const heroTravel = Math.max(window.innerHeight * 0.86, cinematicHero.offsetHeight * 0.62);
+    const progress = clamp(rawY / heroTravel, 0, 1);
     cinematicHero.style.setProperty('--entry-progress', progress.toFixed(3));
+  }
+
+  if (floatingHeroLogo) {
+    if (isHomeEntryPage) {
+      const logoProgress = entryMotionProgress;
+      floatingHeroLogo.style.setProperty('--logo-progress', logoProgress.toFixed(3));
+      floatingHeroLogo.classList.toggle('visible', logoProgress > 0.08);
+    } else {
+      floatingHeroLogo.style.setProperty('--logo-progress', '1');
+      floatingHeroLogo.classList.add('visible');
+    }
   }
 
   parallaxNodes.forEach((node) => {
@@ -168,14 +534,6 @@ const updateVisuals = (scrollYValue) => {
     });
   });
 
-  if (floatingGlass) {
-    const drift = Math.min(320, y * 0.18);
-    const sway = Math.sin(y * 0.0025) * 5;
-    const rotate = -7 + sway;
-    const scale = 1 + Math.min(y * 0.00006, 0.12);
-    floatingGlass.style.transform = `translate3d(0, ${drift}px, 0) rotate(${rotate}deg) scale(${scale})`;
-  }
-
 };
 
 let smoothY = window.scrollY;
@@ -228,15 +586,73 @@ yearNodes.forEach((node) => {
 reservationForms.forEach((form) => {
   clearReservationForm(form);
 
-  form.addEventListener('submit', (event) => {
+  form.addEventListener('submit', async (event) => {
     event.preventDefault();
     if (!form.reportValidity()) return;
+
+    const endpoint = form.getAttribute('data-reservation-endpoint') || 'api/reservation.php';
     const note = form.querySelector('.form-note');
-    if (!note) return;
-    note.textContent = 'Rezervasyon talebiniz alındı. Kısa süre içinde telefonla onay verilecektir.';
-    note.style.color = '#ffe08a';
-    form.reset();
+    const submitButton = form.querySelector('button[type="submit"]');
+    const originalButtonLabel = submitButton ? submitButton.textContent : '';
+
+    if (submitButton) {
+      submitButton.disabled = true;
+      submitButton.textContent = 'Gönderiliyor...';
+    }
+
+    if (note) {
+      note.textContent = 'Rezervasyon talebiniz gönderiliyor...';
+      note.style.color = '#d8c8bb';
+    }
+
+    const formData = new FormData(form);
+    const record = {
+      id: `res_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`,
+      createdAt: new Date().toISOString(),
+      name: sanitizeText(formData.get('reservation_name'), 90),
+      phone: sanitizeText(formData.get('reservation_phone'), 40),
+      guests: sanitizeText(formData.get('reservation_guests'), 30),
+      date: sanitizeText(formData.get('reservation_date'), 20),
+      time: sanitizeText(formData.get('reservation_time'), 10),
+      notes: sanitizeText(formData.get('reservation_notes'), 260),
+      consent: Boolean(formData.get('reservation_consent')),
+      website: sanitizeText(formData.get('website'), 120),
+    };
+
+    try {
+      await submitReservationToEndpoint(endpoint, record);
+      persistReservation(record);
+
+      if (note) {
+        note.textContent = 'Rezervasyon talebiniz alındı. Ekibimiz kısa süre içinde sizinle iletişime geçecektir.';
+        note.style.color = '#e6b6a8';
+      }
+      form.reset();
+    } catch (_) {
+      persistReservation(record);
+      if (note) {
+        note.textContent = 'Sunucuya bağlanırken sorun oluştu. Talep yerel olarak kaydedildi; lütfen telefonla da teyit edin.';
+        note.style.color = '#f1b6a9';
+      }
+    } finally {
+      if (submitButton) {
+        submitButton.disabled = false;
+        submitButton.textContent = originalButtonLabel || 'Hemen Rezervasyon Yap';
+      }
+    }
   });
+});
+
+window.addEventListener('storage', (event) => {
+  if (event.key === eventsStorageKey || event.key === eventsSyncKey) {
+    renderEvents();
+  }
+});
+
+eventsChannel?.addEventListener('message', (event) => {
+  if (event?.data?.type === 'events-updated') {
+    renderEvents();
+  }
 });
 
 const saveCookiePreference = (value) => {
@@ -288,7 +704,12 @@ window.addEventListener('pageshow', () => {
   reservationForms.forEach((form) => {
     clearReservationForm(form);
   });
+  renderEvents();
   queueAnimation();
+});
+
+window.addEventListener('focus', () => {
+  renderEvents();
 });
 
 queueAnimation();
