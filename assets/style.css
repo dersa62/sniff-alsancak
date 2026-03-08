@@ -1614,6 +1614,15 @@ main {
   width: min(440px, 100%);
 }
 
+.reservation-form-only {
+  grid-template-columns: 1fr;
+  justify-items: center;
+}
+
+.reservation-form-only > .form-wrap {
+  width: min(560px, 100%);
+}
+
 .section-edge {
   padding: 0;
 }
@@ -3019,6 +3028,16 @@ footer {
     display: inline-flex;
   }
 
+  .site-nav,
+  .entry-nav {
+    justify-content: flex-end;
+  }
+
+  .site-nav .brand-wrap,
+  .entry-nav .brand-wrap {
+    display: none !important;
+  }
+
   .nav-links {
     position: absolute;
     left: 0;
@@ -3051,10 +3070,7 @@ footer {
     background: transparent;
     backdrop-filter: none;
     box-shadow: 0 10px 24px rgba(0, 0, 0, 0.32);
-    justify-content: space-between;
-  }
-  .entry-nav .brand-wrap {
-    display: grid;
+    justify-content: flex-end;
   }
 
   .entry-nav .nav-links a {
@@ -3208,6 +3224,9 @@ footer {
 
   .floating-contact {
     right: 12px;
+    top: auto;
+    bottom: 12px;
+    transform: none;
   }
 }
 
@@ -3386,6 +3405,13 @@ footer {
 
   .footer-columns {
     grid-template-columns: 1fr;
+  }
+
+  .footer-column,
+  .footer-column h4,
+  .footer-column p,
+  .footer-column a {
+    text-align: center;
   }
 
   .footer-policy-row {
