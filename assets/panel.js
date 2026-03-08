@@ -1,6 +1,7 @@
 const authStorageKey = 'sniff_admin_auth_v1';
 const reservationStorageKey = 'sniff_reservations_v1';
 const eventsStorageKey = 'sniff_events_v1';
+const menuStorageKey = 'sniff_menu_items_v1';
 const eventsSyncKey = 'sniff_events_sync_v1';
 const eventsChannelKey = 'sniff_events_channel_v1';
 const adminUsername = 'admin';
@@ -32,6 +33,65 @@ const defaultEvents = [
   },
 ];
 
+const defaultMenuItems = [
+  {
+    id: 'menu_velvet_negroni',
+    title: 'Velvet Negroni',
+    description: 'Barrel gin, kırmızı bitter, vermut ve kakao-narenciye parfümü.',
+    image: 'https://images.unsplash.com/photo-1749314374163-185677265d63?auto=format&fit=crop&fm=jpg&ixlib=rb-4.1.0&q=80&w=2400',
+    price: '',
+  },
+  {
+    id: 'menu_midnight_citrus',
+    title: 'Midnight Citrus',
+    description: 'Yuzu, bergamot köpük ve canlı limon yağları.',
+    image: 'https://images.unsplash.com/photo-1671741967944-cb60915f5823?auto=format&fit=crop&fm=jpg&ixlib=rb-4.1.0&q=80&w=2400',
+    price: '',
+  },
+  {
+    id: 'menu_golden_bloom',
+    title: 'Golden Bloom',
+    description: 'Reposado tekila, safran ve passionfruit dengesi.',
+    image: 'https://images.unsplash.com/photo-1745052811236-a56a0f8718d1?auto=format&fit=crop&fm=jpg&ixlib=rb-4.1.0&q=80&w=2400',
+    price: '',
+  },
+  {
+    id: 'menu_smoked_garden',
+    title: 'Smoked Garden',
+    description: 'Mezcal, taze fesleğen, salatalık ve aromatik is.',
+    image: 'https://images.unsplash.com/photo-1761388545625-b233a6f35628?auto=format&fit=crop&fm=jpg&ixlib=rb-4.1.0&q=80&w=2400',
+    price: '',
+  },
+  {
+    id: 'menu_ruby_boulevard',
+    title: 'Ruby Boulevard',
+    description: 'Bourbon, kiraz reduksiyonu ve baharatlı bitiş.',
+    image: 'https://images.unsplash.com/photo-1690021416125-56f8464a8b01?auto=format&fit=crop&fm=jpg&ixlib=rb-4.1.0&q=80&w=2400',
+    price: '',
+  },
+  {
+    id: 'menu_neon_spritz',
+    title: 'Neon Spritz',
+    description: 'Mürver çiçeği, prosecco ve narenciye sisi.',
+    image: 'https://images.unsplash.com/photo-1690021416431-d10365a06a3d?auto=format&fit=crop&fm=jpg&ixlib=rb-4.1.0&q=80&w=2400',
+    price: '',
+  },
+  {
+    id: 'menu_saffron_sour',
+    title: 'Saffron Sour',
+    description: 'Safran şurubu, beyaz şeftali ve ipeksi doku.',
+    image: 'https://images.unsplash.com/photo-1632558608598-f90ec7b026dd?auto=format&fit=crop&fm=jpg&ixlib=rb-4.1.0&q=80&w=2400',
+    price: '',
+  },
+  {
+    id: 'menu_after_dark_martini',
+    title: 'After Dark Martini',
+    description: 'Espresso likörü, vanilya is dokusu ve kakao.',
+    image: 'https://images.unsplash.com/photo-1745060829956-dcd14b3511cb?auto=format&fit=crop&fm=jpg&ixlib=rb-4.1.0&q=80&w=2400',
+    price: '',
+  },
+];
+
 const loginSection = document.querySelector('[data-panel-login]');
 const dashboardSection = document.querySelector('[data-panel-dashboard]');
 const logoutButton = document.querySelector('[data-panel-logout]');
@@ -43,16 +103,21 @@ const clearReservationsButton = document.querySelector('[data-clear-reservations
 const eventForm = document.querySelector('#event-form');
 const resetEventFormButton = document.querySelector('[data-reset-event-form]');
 const eventNote = document.querySelector('[data-event-note]');
+const menuForm = document.querySelector('#menu-form');
+const resetMenuFormButton = document.querySelector('[data-reset-menu-form]');
+const menuNote = document.querySelector('[data-menu-note]');
+const menuBody = document.querySelector('[data-menu-items-body]');
 const reservationCountNode = document.querySelector('[data-stat-reservations]');
 const eventCountNode = document.querySelector('[data-stat-events]');
+const menuCountNode = document.querySelector('[data-stat-menu-items]');
 const imageModal = document.querySelector('[data-image-modal]');
 const imageModalImage = document.querySelector('[data-image-modal-img]');
 
 const sanitizeText = (value, maxLength = 220) => String(value || '').replace(/\s+/g, ' ').trim().slice(0, maxLength);
 
-const sanitizeImage = (value) => {
+const sanitizeImage = (value, fallbackImage = defaultEvents[0].image) => {
   const cleaned = String(value || '').trim().replace(/["'<>`]/g, '');
-  return cleaned || defaultEvents[0].image;
+  return cleaned || fallbackImage;
 };
 
 const readFileAsDataUrl = (file) =>
@@ -135,7 +200,21 @@ const normalizeEvent = (event, index) => {
     meta: sanitizeText(event.meta, 70) || 'Özel Etkinlik',
     title,
     description,
-    image: sanitizeImage(event.image),
+    image: sanitizeImage(event.image, defaultEvents[0].image),
+  };
+};
+
+const normalizeMenuItem = (item, index) => {
+  if (!item || typeof item !== 'object') return null;
+  const title = sanitizeText(item.title, 90);
+  const description = sanitizeText(item.description, 220);
+  if (!title || !description) return null;
+  return {
+    id: sanitizeText(item.id, 64) || `menu_${Date.now()}_${index}`,
+    title,
+    description,
+    price: sanitizeText(item.price, 32),
+    image: sanitizeImage(item.image, defaultMenuItems[0].image),
   };
 };
 
@@ -150,6 +229,17 @@ const getEvents = () => {
   return [...defaultEvents];
 };
 
+const getMenuItems = () => {
+  const normalized = readStorageArray(menuStorageKey)
+    .map((item, index) => normalizeMenuItem(item, index))
+    .filter(Boolean);
+
+  if (normalized.length > 0) return normalized;
+
+  writeStorageArray(menuStorageKey, defaultMenuItems);
+  return [...defaultMenuItems];
+};
+
 const setEvents = (events) => {
   const saved = writeStorageArray(eventsStorageKey, events);
   if (!saved) return false;
@@ -159,6 +249,13 @@ const setEvents = (events) => {
     // ignore storage sync marker failures
   }
   eventsChannel?.postMessage({ type: 'events-updated', at: Date.now() });
+  return true;
+};
+
+const setMenuItems = (items) => {
+  const saved = writeStorageArray(menuStorageKey, items);
+  if (!saved) return false;
+  eventsChannel?.postMessage({ type: 'menu-updated', at: Date.now() });
   return true;
 };
 
@@ -188,6 +285,9 @@ const formatDateTime = (isoDate) => {
 const renderStats = () => {
   reservationCountNode.textContent = String(getReservations().length);
   eventCountNode.textContent = String(getEvents().length);
+  if (menuCountNode) {
+    menuCountNode.textContent = String(getMenuItems().length);
+  }
 };
 
 const renderReservations = () => {
@@ -236,14 +336,40 @@ const getEventImageFromForm = async () => {
     return optimizeImageFile(uploadedFile);
   }
 
-  const urlValue = sanitizeImage(eventForm.elements.image.value);
+  const urlValue = sanitizeImage(eventForm.elements.image.value, defaultEvents[0].image);
   if (urlValue) return urlValue;
   return defaultEvents[0].image;
 };
 
+const fillMenuForm = (item) => {
+  menuForm.elements.menu_item_id.value = item.id;
+  menuForm.elements.title.value = item.title;
+  menuForm.elements.price.value = item.price || '';
+  menuForm.elements.description.value = item.description;
+  menuForm.elements.image.value = item.image;
+  menuNote.textContent = 'Menü öğesi düzenleme modunda. Değiştirip Kaydet butonuna basın.';
+};
+
+const resetMenuForm = () => {
+  menuForm.reset();
+  menuForm.elements.menu_item_id.value = '';
+  menuNote.textContent = '';
+};
+
+const getMenuImageFromForm = async () => {
+  const uploadedFile = menuForm.elements.image_file?.files?.[0] || null;
+  if (uploadedFile) {
+    return optimizeImageFile(uploadedFile);
+  }
+
+  const urlValue = sanitizeImage(menuForm.elements.image.value, defaultMenuItems[0].image);
+  if (urlValue) return urlValue;
+  return defaultMenuItems[0].image;
+};
+
 const openImageModal = (src) => {
   if (!imageModal || !imageModalImage) return;
-  imageModalImage.src = sanitizeImage(src);
+  imageModalImage.src = sanitizeImage(src, defaultEvents[0].image);
   imageModal.hidden = false;
   document.body.classList.add('admin-modal-open');
 };
@@ -270,7 +396,7 @@ const renderEvents = () => {
       <td>${sanitizeText(event.meta, 70)}</td>
       <td>${sanitizeText(event.title, 90)}</td>
       <td>${sanitizeText(event.description, 120)}</td>
-      <td><button type="button" class="btn btn-ghost admin-inline-btn" data-open-image="${sanitizeImage(event.image)}">Görseli Aç</button></td>
+      <td><button type="button" class="btn btn-ghost admin-inline-btn" data-open-image="${sanitizeImage(event.image, defaultEvents[0].image)}">Görseli Aç</button></td>
       <td>
         <button type="button" class="btn btn-ghost admin-inline-btn" data-edit-event="${sanitizeText(event.id, 64)}">Düzenle</button>
         <button type="button" class="btn btn-ghost admin-inline-btn" data-delete-event="${sanitizeText(event.id, 64)}">Sil</button>
@@ -280,9 +406,35 @@ const renderEvents = () => {
   });
 };
 
+const renderMenuItems = () => {
+  const items = getMenuItems();
+  menuBody.innerHTML = '';
+
+  if (items.length === 0) {
+    menuBody.innerHTML = '<tr><td colspan="5">Henüz menü öğesi yok.</td></tr>';
+    return;
+  }
+
+  items.forEach((item) => {
+    const row = document.createElement('tr');
+    row.innerHTML = `
+      <td>${sanitizeText(item.title, 90)}</td>
+      <td>${sanitizeText(item.price, 32) || '-'}</td>
+      <td>${sanitizeText(item.description, 120)}</td>
+      <td><button type="button" class="btn btn-ghost admin-inline-btn" data-open-image="${sanitizeImage(item.image, defaultMenuItems[0].image)}">Görseli Aç</button></td>
+      <td>
+        <button type="button" class="btn btn-ghost admin-inline-btn" data-edit-menu-item="${sanitizeText(item.id, 64)}">Düzenle</button>
+        <button type="button" class="btn btn-ghost admin-inline-btn" data-delete-menu-item="${sanitizeText(item.id, 64)}">Sil</button>
+      </td>
+    `;
+    menuBody.appendChild(row);
+  });
+};
+
 const refreshDashboard = () => {
   renderReservations();
   renderEvents();
+  renderMenuItems();
   renderStats();
 };
 
@@ -315,6 +467,7 @@ logoutButton.addEventListener('click', () => {
   setAuth(false);
   setPanelView(false);
   resetEventForm();
+  resetMenuForm();
 });
 
 clearReservationsButton.addEventListener('click', () => {
@@ -375,8 +528,53 @@ eventForm.addEventListener('submit', async (event) => {
   refreshDashboard();
 });
 
+menuForm.addEventListener('submit', async (event) => {
+  event.preventDefault();
+  if (!menuForm.reportValidity()) return;
+
+  let imageSource = defaultMenuItems[0].image;
+  try {
+    imageSource = await getMenuImageFromForm();
+  } catch (error) {
+    menuNote.textContent = error instanceof Error ? error.message : 'Görsel yüklenemedi.';
+    return;
+  }
+
+  const itemId = sanitizeText(menuForm.elements.menu_item_id.value, 64);
+  const newItem = {
+    id: itemId || `menu_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
+    title: sanitizeText(menuForm.elements.title.value, 90),
+    price: sanitizeText(menuForm.elements.price.value, 32),
+    description: sanitizeText(menuForm.elements.description.value, 220),
+    image: imageSource,
+  };
+
+  const items = getMenuItems();
+  const index = items.findIndex((item) => item.id === newItem.id);
+
+  if (index >= 0) {
+    items[index] = newItem;
+    menuNote.textContent = 'Menü öğesi güncellendi.';
+  } else {
+    items.unshift(newItem);
+    menuNote.textContent = 'Yeni menü öğesi eklendi.';
+  }
+
+  const saved = setMenuItems(items);
+  if (!saved) {
+    menuNote.textContent = 'Menü öğesi kaydedilemedi. Tarayıcı depolama alanı dolu olabilir.';
+    return;
+  }
+  resetMenuForm();
+  refreshDashboard();
+});
+
 resetEventFormButton.addEventListener('click', () => {
   resetEventForm();
+});
+
+resetMenuFormButton.addEventListener('click', () => {
+  resetMenuForm();
 });
 
 eventsBody.addEventListener('click', (event) => {
@@ -411,8 +609,44 @@ eventsBody.addEventListener('click', (event) => {
   refreshDashboard();
 });
 
+menuBody.addEventListener('click', (event) => {
+  const target = event.target;
+  if (!(target instanceof HTMLElement)) return;
+
+  const openImageButton = target.closest('[data-open-image]');
+  if (openImageButton instanceof HTMLElement) {
+    const imageSrc = openImageButton.getAttribute('data-open-image');
+    if (imageSrc) openImageModal(imageSrc);
+    return;
+  }
+
+  const editButton = target.closest('[data-edit-menu-item]');
+  const editId = editButton instanceof HTMLElement ? editButton.getAttribute('data-edit-menu-item') : null;
+  if (editId) {
+    const item = getMenuItems().find((menuItem) => menuItem.id === editId);
+    if (item) fillMenuForm(item);
+    return;
+  }
+
+  const deleteButton = target.closest('[data-delete-menu-item]');
+  const deleteId = deleteButton instanceof HTMLElement ? deleteButton.getAttribute('data-delete-menu-item') : null;
+  if (!deleteId) return;
+
+  const remaining = getMenuItems().filter((item) => item.id !== deleteId);
+  const saved = setMenuItems(remaining);
+  if (!saved) {
+    menuNote.textContent = 'Menü öğesi silinemedi. Tarayıcı depolama alanı dolu olabilir.';
+    return;
+  }
+  resetMenuForm();
+  refreshDashboard();
+});
+
 eventsChannel?.addEventListener('message', (event) => {
   if (event?.data?.type === 'events-updated') {
+    refreshDashboard();
+  }
+  if (event?.data?.type === 'menu-updated') {
     refreshDashboard();
   }
 });
@@ -432,7 +666,7 @@ window.addEventListener('keydown', (event) => {
 });
 
 window.addEventListener('storage', (event) => {
-  if (event.key === reservationStorageKey || event.key === eventsStorageKey) {
+  if (event.key === reservationStorageKey || event.key === eventsStorageKey || event.key === menuStorageKey) {
     refreshDashboard();
   }
 });
