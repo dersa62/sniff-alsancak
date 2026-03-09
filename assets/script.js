@@ -56,6 +56,7 @@ const defaultEvents = [
 const defaultMenuItems = [
   {
     id: 'menu_velvet_negroni',
+    category: 'kokteyller',
     title: 'Velvet Negroni',
     description: 'Barrel gin, kırmızı bitter, vermut ve kakao-narenciye parfümü.',
     image: 'https://images.unsplash.com/photo-1749314374163-185677265d63?auto=format&fit=crop&fm=jpg&ixlib=rb-4.1.0&q=80&w=2400',
@@ -63,6 +64,7 @@ const defaultMenuItems = [
   },
   {
     id: 'menu_midnight_citrus',
+    category: 'kokteyller',
     title: 'Midnight Citrus',
     description: 'Yuzu, bergamot köpük ve canlı limon yağları.',
     image: 'https://images.unsplash.com/photo-1671741967944-cb60915f5823?auto=format&fit=crop&fm=jpg&ixlib=rb-4.1.0&q=80&w=2400',
@@ -70,6 +72,7 @@ const defaultMenuItems = [
   },
   {
     id: 'menu_golden_bloom',
+    category: 'kokteyller',
     title: 'Golden Bloom',
     description: 'Reposado tekila, safran ve passionfruit dengesi.',
     image: 'https://images.unsplash.com/photo-1745052811236-a56a0f8718d1?auto=format&fit=crop&fm=jpg&ixlib=rb-4.1.0&q=80&w=2400',
@@ -77,6 +80,7 @@ const defaultMenuItems = [
   },
   {
     id: 'menu_smoked_garden',
+    category: 'kokteyller',
     title: 'Smoked Garden',
     description: 'Mezcal, taze fesleğen, salatalık ve aromatik is.',
     image: 'https://images.unsplash.com/photo-1761388545625-b233a6f35628?auto=format&fit=crop&fm=jpg&ixlib=rb-4.1.0&q=80&w=2400',
@@ -84,6 +88,7 @@ const defaultMenuItems = [
   },
   {
     id: 'menu_ruby_boulevard',
+    category: 'kokteyller',
     title: 'Ruby Boulevard',
     description: 'Bourbon, kiraz reduksiyonu ve baharatlı bitiş.',
     image: 'https://images.unsplash.com/photo-1690021416125-56f8464a8b01?auto=format&fit=crop&fm=jpg&ixlib=rb-4.1.0&q=80&w=2400',
@@ -91,6 +96,7 @@ const defaultMenuItems = [
   },
   {
     id: 'menu_neon_spritz',
+    category: 'soguk-icecekler',
     title: 'Neon Spritz',
     description: 'Mürver çiçeği, prosecco ve narenciye sisi.',
     image: 'https://images.unsplash.com/photo-1690021416431-d10365a06a3d?auto=format&fit=crop&fm=jpg&ixlib=rb-4.1.0&q=80&w=2400',
@@ -98,6 +104,7 @@ const defaultMenuItems = [
   },
   {
     id: 'menu_saffron_sour',
+    category: 'kokteyller',
     title: 'Saffron Sour',
     description: 'Safran şurubu, beyaz şeftali ve ipeksi doku.',
     image: 'https://images.unsplash.com/photo-1632558608598-f90ec7b026dd?auto=format&fit=crop&fm=jpg&ixlib=rb-4.1.0&q=80&w=2400',
@@ -105,12 +112,54 @@ const defaultMenuItems = [
   },
   {
     id: 'menu_after_dark_martini',
+    category: 'kokteyller',
     title: 'After Dark Martini',
     description: 'Espresso likörü, vanilya is dokusu ve kakao.',
     image: 'https://images.unsplash.com/photo-1745060829956-dcd14b3511cb?auto=format&fit=crop&fm=jpg&ixlib=rb-4.1.0&q=80&w=2400',
     price: '',
   },
+  {
+    id: 'menu_truf_patates',
+    category: 'yiyecekler',
+    title: 'Trüf Patates',
+    description: 'Parmesan, trüf yağı ve sarımsak aioli ile servis edilir.',
+    image: 'https://images.unsplash.com/photo-1625944230945-1b7dd3b949ab?auto=format&fit=crop&fm=jpg&ixlib=rb-4.1.0&q=80&w=2400',
+    price: '',
+  },
+  {
+    id: 'menu_mini_slider',
+    category: 'yiyecekler',
+    title: 'Mini Slider',
+    description: 'Karamelize soğan, cheddar ve özel Sniff sosu.',
+    image: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&fm=jpg&ixlib=rb-4.1.0&q=80&w=2400',
+    price: '',
+  },
+  {
+    id: 'menu_ev_limonata',
+    category: 'soft-icecekler',
+    title: 'Ev Yapımı Limonata',
+    description: 'Taze limon, nane ve hafif zencefil dokunuşu.',
+    image: 'https://images.unsplash.com/photo-1523677011781-c91d1bbe2f9e?auto=format&fit=crop&fm=jpg&ixlib=rb-4.1.0&q=80&w=2400',
+    price: '',
+  },
+  {
+    id: 'menu_zencefilli_soda',
+    category: 'soft-icecekler',
+    title: 'Zencefilli Soda',
+    description: 'Soğuk soda, lime ve aromatik zencefil şurubu.',
+    image: 'https://images.unsplash.com/photo-1571073175840-9d0904c9843a?auto=format&fit=crop&fm=jpg&ixlib=rb-4.1.0&q=80&w=2400',
+    price: '',
+  },
 ];
+
+const menuCategories = [
+  { key: 'kokteyller', label: 'Kokteyller' },
+  { key: 'yiyecekler', label: 'Yiyecekler' },
+  { key: 'soguk-icecekler', label: 'Soğuk İçecekler' },
+  { key: 'soft-icecekler', label: 'Soft İçecekler' },
+];
+
+const menuCategoryByKey = new Map(menuCategories.map((category) => [category.key, category]));
 
 const cinematicGroups = Array.from(cinematicParallaxContainers).map((container) => ({
   container,
@@ -123,6 +172,30 @@ const cinematicGroups = Array.from(cinematicParallaxContainers).map((container) 
 const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
 
 const sanitizeText = (value, maxLength = 220) => String(value || '').replace(/\s+/g, ' ').trim().slice(0, maxLength);
+
+const normalizePrice = (value) => {
+  const cleaned = sanitizeText(value, 32);
+  if (!cleaned) return '';
+  if (/₺|(?:^|\s)(TL|TRY)(?:\s|$)/i.test(cleaned)) return cleaned;
+  const compact = cleaned.replace(/\s+/g, '');
+  if (/^\d+([.,]\d{1,2})?$/.test(compact)) {
+    return `₺${compact}`;
+  }
+  return `₺${cleaned}`;
+};
+
+const normalizeMenuCategory = (value) => {
+  const cleaned = sanitizeText(value, 40).toLocaleLowerCase('tr-TR');
+  if (!cleaned) return 'kokteyller';
+  if (menuCategoryByKey.has(cleaned)) return cleaned;
+  const matched = menuCategories.find((category) => category.label.toLocaleLowerCase('tr-TR') === cleaned);
+  return matched ? matched.key : 'kokteyller';
+};
+
+const getMenuCategoryLabel = (value) => {
+  const key = normalizeMenuCategory(value);
+  return menuCategoryByKey.get(key)?.label || menuCategories[0].label;
+};
 
 const readStorageArray = (key) => {
   try {
@@ -179,10 +252,11 @@ const normalizeMenuItem = (item, index) => {
   if (!title || !description) return null;
   return {
     id: sanitizeText(item.id, 64) || `menu_${Date.now()}_${index}`,
+    category: normalizeMenuCategory(item.category),
     title,
     description,
     image: sanitizeImage(item.image, defaultMenuItems[0].image),
-    price: sanitizeText(item.price, 32),
+    price: normalizePrice(item.price),
   };
 };
 
@@ -257,32 +331,85 @@ const createEventCard = (event) => {
   return article;
 };
 
-const createMenuCard = (item) => {
-  const article = document.createElement('article');
-  article.className = 'photo-card';
-  article.setAttribute('data-reveal', '');
-  article.style.setProperty('--card-image', `url('${sanitizeImage(item.image, defaultMenuItems[0].image)}')`);
+const createMenuRow = (item) => {
+  const row = document.createElement('article');
+  row.className = 'menu-item-row';
 
-  const body = document.createElement('div');
-  body.className = 'card-body';
+  const thumb = document.createElement('img');
+  thumb.className = 'menu-item-thumb';
+  thumb.loading = 'lazy';
+  thumb.decoding = 'async';
+  thumb.src = sanitizeImage(item.image, defaultMenuItems[0].image);
+  thumb.alt = `${sanitizeText(item.title, 90)} görseli`;
 
-  const price = sanitizeText(item.price, 32);
-  if (price) {
-    const priceNode = document.createElement('span');
-    priceNode.className = 'menu-price';
-    priceNode.textContent = price;
-    body.appendChild(priceNode);
-  }
+  const content = document.createElement('div');
+  content.className = 'menu-item-content';
 
   const title = document.createElement('h3');
+  title.className = 'menu-item-title';
   title.textContent = sanitizeText(item.title, 90);
 
   const description = document.createElement('p');
+  description.className = 'menu-item-description';
   description.textContent = sanitizeText(item.description, 220);
 
-  body.append(title, description);
-  article.appendChild(body);
-  return article;
+  content.append(title, description);
+  row.append(thumb, content);
+
+  const price = normalizePrice(item.price);
+  if (price) {
+    const priceNode = document.createElement('span');
+    priceNode.className = 'menu-item-price';
+    priceNode.textContent = price;
+    row.appendChild(priceNode);
+  }
+
+  return row;
+};
+
+const buildMenuCategories = (items) => {
+  const grouped = menuCategories.map((category) => ({ ...category, items: [] }));
+  const groupedMap = new Map(grouped.map((category) => [category.key, category]));
+
+  items.forEach((item) => {
+    const key = normalizeMenuCategory(item.category);
+    const group = groupedMap.get(key);
+    if (group) {
+      group.items.push(item);
+    }
+  });
+
+  return grouped;
+};
+
+const bindMenuAccordion = (target) => {
+  if (target.dataset.menuAccordionBound === '1') return;
+
+  target.addEventListener('click', (event) => {
+    const targetButton = event.target instanceof HTMLElement ? event.target.closest('[data-menu-toggle]') : null;
+    if (!(targetButton instanceof HTMLButtonElement)) return;
+
+    const categoryNode = targetButton.closest('.menu-category');
+    if (!(categoryNode instanceof HTMLElement)) return;
+
+    const isOpen = categoryNode.classList.contains('is-open');
+    const allCategories = target.querySelectorAll('.menu-category');
+    allCategories.forEach((node) => {
+      const panel = node.querySelector('.menu-category-panel');
+      const toggleButton = node.querySelector('[data-menu-toggle]');
+      const shouldOpen = node === categoryNode ? !isOpen : false;
+
+      node.classList.toggle('is-open', shouldOpen);
+      if (panel instanceof HTMLElement) {
+        panel.hidden = !shouldOpen;
+      }
+      if (toggleButton instanceof HTMLElement) {
+        toggleButton.setAttribute('aria-expanded', shouldOpen ? 'true' : 'false');
+      }
+    });
+  });
+
+  target.dataset.menuAccordionBound = '1';
 };
 
 const renderEvents = () => {
@@ -314,20 +441,69 @@ const renderMenu = () => {
   if (menuTargets.length === 0) return;
   const items = getMenuItems();
   menuTargets.forEach((target) => {
+    bindMenuAccordion(target);
+    target.classList.add('menu-accordion');
     target.innerHTML = '';
 
-    if (items.length === 0) {
-      const empty = document.createElement('p');
-      empty.className = 'lead';
-      empty.textContent = 'Henüz menü öğesi eklenmedi.';
-      target.appendChild(empty);
-      return;
-    }
+    const categories = buildMenuCategories(items);
+    categories.forEach((category, index) => {
+      const categoryNode = document.createElement('article');
+      categoryNode.className = 'menu-category';
+      categoryNode.setAttribute('data-reveal', '');
 
-    items.forEach((item) => {
-      const card = createMenuCard(item);
-      target.appendChild(card);
-      observer.observe(card);
+      const shouldOpen = index === 0;
+      categoryNode.classList.toggle('is-open', shouldOpen);
+
+      const toggleButton = document.createElement('button');
+      toggleButton.type = 'button';
+      toggleButton.className = 'menu-category-toggle';
+      toggleButton.setAttribute('data-menu-toggle', category.key);
+      toggleButton.setAttribute('aria-expanded', shouldOpen ? 'true' : 'false');
+
+      const coverImage = sanitizeImage(
+        category.items[0]?.image || defaultMenuItems[0].image,
+        defaultMenuItems[0].image
+      );
+      toggleButton.style.setProperty('--menu-category-cover', `url('${coverImage}')`);
+
+      const heading = document.createElement('div');
+      heading.className = 'menu-category-heading';
+
+      const title = document.createElement('span');
+      title.className = 'menu-category-title';
+      title.textContent = getMenuCategoryLabel(category.key);
+
+      const count = document.createElement('span');
+      count.className = 'menu-category-count';
+      count.textContent = `${category.items.length} öğe`;
+
+      heading.append(title, count);
+
+      const indicator = document.createElement('span');
+      indicator.className = 'menu-category-indicator';
+      indicator.setAttribute('aria-hidden', 'true');
+      indicator.textContent = '⌄';
+
+      toggleButton.append(heading, indicator);
+
+      const panel = document.createElement('div');
+      panel.className = 'menu-category-panel';
+      panel.hidden = !shouldOpen;
+
+      if (category.items.length === 0) {
+        const empty = document.createElement('p');
+        empty.className = 'menu-category-empty';
+        empty.textContent = 'Bu kategoride henüz ürün yok.';
+        panel.appendChild(empty);
+      } else {
+        category.items.forEach((item) => {
+          panel.appendChild(createMenuRow(item));
+        });
+      }
+
+      categoryNode.append(toggleButton, panel);
+      target.appendChild(categoryNode);
+      observer.observe(categoryNode);
     });
   });
 };
@@ -361,7 +537,44 @@ const initAboutParallax = () => {
   const rightGlass = aboutParallaxSection.querySelector('.glass-right');
   const impact = aboutParallaxSection.querySelector('.impact');
   const flash = aboutParallaxSection.querySelector('.clink-flash');
+  const scrollHint = aboutParallaxSection.querySelector('.about-parallax-scroll-hint');
   if (!composition || !logo || !leftGlass || !rightGlass || !impact || !flash) return;
+
+  // Prevent layout drift by initializing only after parallax layer assets are ready.
+  if (aboutParallaxSection.dataset.parallaxAssetsReady !== '1') {
+    const layerImages = [logo, leftGlass, rightGlass, impact];
+    const needsLoad = layerImages.some((img) => !(img.complete && img.naturalWidth > 0));
+
+    if (needsLoad) {
+      if (aboutParallaxSection.dataset.parallaxWaiting !== '1') {
+        aboutParallaxSection.dataset.parallaxWaiting = '1';
+        Promise.all(
+          layerImages.map(
+            (img) =>
+              new Promise((resolve) => {
+                if (img.complete && img.naturalWidth > 0) {
+                  resolve();
+                  return;
+                }
+                const done = () => resolve();
+                img.addEventListener('load', done, { once: true });
+                img.addEventListener('error', done, { once: true });
+              })
+          )
+        ).then(() => {
+          aboutParallaxSection.dataset.parallaxAssetsReady = '1';
+          aboutParallaxSection.dataset.parallaxWaiting = '0';
+          requestAnimationFrame(() => requestAnimationFrame(initAboutParallax));
+        });
+      }
+      return;
+    }
+
+    aboutParallaxSection.dataset.parallaxAssetsReady = '1';
+  }
+
+  if (aboutParallaxSection.dataset.parallaxMounted === '1') return;
+  aboutParallaxSection.dataset.parallaxMounted = '1';
 
   const gsapLib = window.gsap;
   const scrollTriggerPlugin = window.ScrollTrigger;
@@ -375,6 +588,7 @@ const initAboutParallax = () => {
     impact.style.opacity = '1';
     logo.style.transform = 'translateX(-50%)';
     logo.style.opacity = '1';
+    flash.style.transform = 'translateX(-50%) scale(0.72)';
     flash.style.opacity = '0';
     return;
   }
@@ -432,11 +646,11 @@ const initAboutParallax = () => {
   };
 
   if (prefersReducedMotion) {
-    gsapLib.set(leftGlass, { x: 0, y: 0, rotation: 0 });
-    gsapLib.set(rightGlass, { x: 0, y: 0, rotation: 0 });
-    gsapLib.set(impact, { autoAlpha: 1, x: 0, y: 0, scale: 1 });
-    gsapLib.set(logo, { autoAlpha: 1, y: 0, scale: 1 });
-    gsapLib.set(flash, { autoAlpha: 0, scale: 1 });
+    gsapLib.set(leftGlass, { xPercent: -50, x: 0, y: 0, rotation: 0 });
+    gsapLib.set(rightGlass, { xPercent: -50, x: 0, y: 0, rotation: 0 });
+    gsapLib.set(impact, { xPercent: -50, autoAlpha: 1, x: 0, y: 0, scale: 1 });
+    gsapLib.set(logo, { xPercent: -50, autoAlpha: 1, y: 0, scale: 1 });
+    gsapLib.set(flash, { xPercent: -50, autoAlpha: 0, scale: 1 });
     return;
   }
 
@@ -456,18 +670,21 @@ const initAboutParallax = () => {
       const bounceLift = () => stageHeight() * (isMobile ? 0.012 : 0.01);
 
       gsapLib.set(leftGlass, {
+        xPercent: -50,
         x: () => -offscreenX(),
         y: () => stageHeight() * 0.024,
         rotation: -7,
         transformOrigin: '88% 84%',
       });
       gsapLib.set(rightGlass, {
+        xPercent: -50,
         x: () => offscreenX(),
         y: () => stageHeight() * 0.024,
         rotation: 7,
         transformOrigin: '12% 84%',
       });
       gsapLib.set(impact, {
+        xPercent: -50,
         autoAlpha: 0,
         x: 0,
         y: 20,
@@ -475,16 +692,21 @@ const initAboutParallax = () => {
         transformOrigin: '50% 100%',
       });
       gsapLib.set(logo, {
+        xPercent: -50,
         autoAlpha: 0,
         y: 92,
         scale: 0.94,
         transformOrigin: '50% 50%',
       });
       gsapLib.set(flash, {
+        xPercent: -50,
         autoAlpha: 0,
         scale: 0.7,
         transformOrigin: '50% 50%',
       });
+      if (scrollHint) {
+        gsapLib.set(scrollHint, { autoAlpha: 0.88, y: 0 });
+      }
 
       let previousProgress = 0;
       let clinkArmed = true;
@@ -553,20 +775,24 @@ const initAboutParallax = () => {
           { autoAlpha: 0, scale: 0.72 },
           { autoAlpha: 0.95, scale: 1.32, duration: 0.08, ease: 'power2.out', repeat: 1, yoyo: true },
           0.56
-        )
-
-        // Phase 3: steam rises in above glasses.
-        .to(
-          impact,
-          {
-            autoAlpha: 1,
-            scale: 1,
-            y: 0,
-            duration: 0.24,
-            ease: 'power3.out',
-          },
-          0.64
         );
+
+      if (scrollHint) {
+        timeline.to(scrollHint, { autoAlpha: 0, y: -8, duration: 0.16, ease: 'power2.out' }, 0.08);
+      }
+
+      // Phase 3: steam rises in above glasses.
+      timeline.to(
+        impact,
+        {
+          autoAlpha: 1,
+          scale: 1,
+          y: 0,
+          duration: 0.24,
+          ease: 'power3.out',
+        },
+        0.64
+      );
 
       // Phase 4: logo rises from below.
       timeline.to(
@@ -581,6 +807,8 @@ const initAboutParallax = () => {
       };
     }
   );
+
+  requestAnimationFrame(() => scrollTriggerPlugin.refresh(true));
 };
 
 const clearReservationForm = (form) => {
@@ -932,13 +1160,17 @@ const mountCookieBanner = () => {
   document.body.appendChild(banner);
 };
 
-window.addEventListener('pageshow', () => {
+window.addEventListener('pageshow', (event) => {
   reservationForms.forEach((form) => {
     clearReservationForm(form);
   });
   renderEvents();
   renderMenu();
   queueAnimation();
+
+  if (aboutParallaxSection && window.ScrollTrigger) {
+    requestAnimationFrame(() => window.ScrollTrigger.refresh(Boolean(event.persisted)));
+  }
 });
 
 window.addEventListener('focus', () => {

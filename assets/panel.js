@@ -36,6 +36,7 @@ const defaultEvents = [
 const defaultMenuItems = [
   {
     id: 'menu_velvet_negroni',
+    category: 'kokteyller',
     title: 'Velvet Negroni',
     description: 'Barrel gin, kırmızı bitter, vermut ve kakao-narenciye parfümü.',
     image: 'https://images.unsplash.com/photo-1749314374163-185677265d63?auto=format&fit=crop&fm=jpg&ixlib=rb-4.1.0&q=80&w=2400',
@@ -43,6 +44,7 @@ const defaultMenuItems = [
   },
   {
     id: 'menu_midnight_citrus',
+    category: 'kokteyller',
     title: 'Midnight Citrus',
     description: 'Yuzu, bergamot köpük ve canlı limon yağları.',
     image: 'https://images.unsplash.com/photo-1671741967944-cb60915f5823?auto=format&fit=crop&fm=jpg&ixlib=rb-4.1.0&q=80&w=2400',
@@ -50,6 +52,7 @@ const defaultMenuItems = [
   },
   {
     id: 'menu_golden_bloom',
+    category: 'kokteyller',
     title: 'Golden Bloom',
     description: 'Reposado tekila, safran ve passionfruit dengesi.',
     image: 'https://images.unsplash.com/photo-1745052811236-a56a0f8718d1?auto=format&fit=crop&fm=jpg&ixlib=rb-4.1.0&q=80&w=2400',
@@ -57,6 +60,7 @@ const defaultMenuItems = [
   },
   {
     id: 'menu_smoked_garden',
+    category: 'kokteyller',
     title: 'Smoked Garden',
     description: 'Mezcal, taze fesleğen, salatalık ve aromatik is.',
     image: 'https://images.unsplash.com/photo-1761388545625-b233a6f35628?auto=format&fit=crop&fm=jpg&ixlib=rb-4.1.0&q=80&w=2400',
@@ -64,6 +68,7 @@ const defaultMenuItems = [
   },
   {
     id: 'menu_ruby_boulevard',
+    category: 'kokteyller',
     title: 'Ruby Boulevard',
     description: 'Bourbon, kiraz reduksiyonu ve baharatlı bitiş.',
     image: 'https://images.unsplash.com/photo-1690021416125-56f8464a8b01?auto=format&fit=crop&fm=jpg&ixlib=rb-4.1.0&q=80&w=2400',
@@ -71,6 +76,7 @@ const defaultMenuItems = [
   },
   {
     id: 'menu_neon_spritz',
+    category: 'soguk-icecekler',
     title: 'Neon Spritz',
     description: 'Mürver çiçeği, prosecco ve narenciye sisi.',
     image: 'https://images.unsplash.com/photo-1690021416431-d10365a06a3d?auto=format&fit=crop&fm=jpg&ixlib=rb-4.1.0&q=80&w=2400',
@@ -78,6 +84,7 @@ const defaultMenuItems = [
   },
   {
     id: 'menu_saffron_sour',
+    category: 'kokteyller',
     title: 'Saffron Sour',
     description: 'Safran şurubu, beyaz şeftali ve ipeksi doku.',
     image: 'https://images.unsplash.com/photo-1632558608598-f90ec7b026dd?auto=format&fit=crop&fm=jpg&ixlib=rb-4.1.0&q=80&w=2400',
@@ -85,12 +92,54 @@ const defaultMenuItems = [
   },
   {
     id: 'menu_after_dark_martini',
+    category: 'kokteyller',
     title: 'After Dark Martini',
     description: 'Espresso likörü, vanilya is dokusu ve kakao.',
     image: 'https://images.unsplash.com/photo-1745060829956-dcd14b3511cb?auto=format&fit=crop&fm=jpg&ixlib=rb-4.1.0&q=80&w=2400',
     price: '',
   },
+  {
+    id: 'menu_truf_patates',
+    category: 'yiyecekler',
+    title: 'Trüf Patates',
+    description: 'Parmesan, trüf yağı ve sarımsak aioli ile servis edilir.',
+    image: 'https://images.unsplash.com/photo-1625944230945-1b7dd3b949ab?auto=format&fit=crop&fm=jpg&ixlib=rb-4.1.0&q=80&w=2400',
+    price: '',
+  },
+  {
+    id: 'menu_mini_slider',
+    category: 'yiyecekler',
+    title: 'Mini Slider',
+    description: 'Karamelize soğan, cheddar ve özel Sniff sosu.',
+    image: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&fm=jpg&ixlib=rb-4.1.0&q=80&w=2400',
+    price: '',
+  },
+  {
+    id: 'menu_ev_limonata',
+    category: 'soft-icecekler',
+    title: 'Ev Yapımı Limonata',
+    description: 'Taze limon, nane ve hafif zencefil dokunuşu.',
+    image: 'https://images.unsplash.com/photo-1523677011781-c91d1bbe2f9e?auto=format&fit=crop&fm=jpg&ixlib=rb-4.1.0&q=80&w=2400',
+    price: '',
+  },
+  {
+    id: 'menu_zencefilli_soda',
+    category: 'soft-icecekler',
+    title: 'Zencefilli Soda',
+    description: 'Soğuk soda, lime ve aromatik zencefil şurubu.',
+    image: 'https://images.unsplash.com/photo-1571073175840-9d0904c9843a?auto=format&fit=crop&fm=jpg&ixlib=rb-4.1.0&q=80&w=2400',
+    price: '',
+  },
 ];
+
+const menuCategories = [
+  { key: 'kokteyller', label: 'Kokteyller' },
+  { key: 'yiyecekler', label: 'Yiyecekler' },
+  { key: 'soguk-icecekler', label: 'Soğuk İçecekler' },
+  { key: 'soft-icecekler', label: 'Soft İçecekler' },
+];
+
+const menuCategoryByKey = new Map(menuCategories.map((category) => [category.key, category]));
 
 const loginSection = document.querySelector('[data-panel-login]');
 const dashboardSection = document.querySelector('[data-panel-dashboard]');
@@ -114,6 +163,30 @@ const imageModal = document.querySelector('[data-image-modal]');
 const imageModalImage = document.querySelector('[data-image-modal-img]');
 
 const sanitizeText = (value, maxLength = 220) => String(value || '').replace(/\s+/g, ' ').trim().slice(0, maxLength);
+
+const normalizePrice = (value) => {
+  const cleaned = sanitizeText(value, 32);
+  if (!cleaned) return '';
+  if (/₺|(?:^|\s)(TL|TRY)(?:\s|$)/i.test(cleaned)) return cleaned;
+  const compact = cleaned.replace(/\s+/g, '');
+  if (/^\d+([.,]\d{1,2})?$/.test(compact)) {
+    return `₺${compact}`;
+  }
+  return `₺${cleaned}`;
+};
+
+const normalizeMenuCategory = (value) => {
+  const cleaned = sanitizeText(value, 40).toLocaleLowerCase('tr-TR');
+  if (!cleaned) return 'kokteyller';
+  if (menuCategoryByKey.has(cleaned)) return cleaned;
+  const matched = menuCategories.find((category) => category.label.toLocaleLowerCase('tr-TR') === cleaned);
+  return matched ? matched.key : 'kokteyller';
+};
+
+const getMenuCategoryLabel = (value) => {
+  const key = normalizeMenuCategory(value);
+  return menuCategoryByKey.get(key)?.label || menuCategories[0].label;
+};
 
 const sanitizeImage = (value, fallbackImage = defaultEvents[0].image) => {
   const cleaned = String(value || '').trim().replace(/["'<>`]/g, '');
@@ -211,9 +284,10 @@ const normalizeMenuItem = (item, index) => {
   if (!title || !description) return null;
   return {
     id: sanitizeText(item.id, 64) || `menu_${Date.now()}_${index}`,
+    category: normalizeMenuCategory(item.category),
     title,
     description,
-    price: sanitizeText(item.price, 32),
+    price: normalizePrice(item.price),
     image: sanitizeImage(item.image, defaultMenuItems[0].image),
   };
 };
@@ -344,6 +418,7 @@ const getEventImageFromForm = async () => {
 const fillMenuForm = (item) => {
   menuForm.elements.menu_item_id.value = item.id;
   menuForm.elements.title.value = item.title;
+  menuForm.elements.category.value = normalizeMenuCategory(item.category);
   menuForm.elements.price.value = item.price || '';
   menuForm.elements.description.value = item.description;
   menuForm.elements.image.value = item.image;
@@ -353,6 +428,7 @@ const fillMenuForm = (item) => {
 const resetMenuForm = () => {
   menuForm.reset();
   menuForm.elements.menu_item_id.value = '';
+  menuForm.elements.category.value = 'kokteyller';
   menuNote.textContent = '';
 };
 
@@ -411,7 +487,7 @@ const renderMenuItems = () => {
   menuBody.innerHTML = '';
 
   if (items.length === 0) {
-    menuBody.innerHTML = '<tr><td colspan="5">Henüz menü öğesi yok.</td></tr>';
+    menuBody.innerHTML = '<tr><td colspan="6">Henüz menü öğesi yok.</td></tr>';
     return;
   }
 
@@ -419,6 +495,7 @@ const renderMenuItems = () => {
     const row = document.createElement('tr');
     row.innerHTML = `
       <td>${sanitizeText(item.title, 90)}</td>
+      <td>${getMenuCategoryLabel(item.category)}</td>
       <td>${sanitizeText(item.price, 32) || '-'}</td>
       <td>${sanitizeText(item.description, 120)}</td>
       <td><button type="button" class="btn btn-ghost admin-inline-btn" data-open-image="${sanitizeImage(item.image, defaultMenuItems[0].image)}">Görseli Aç</button></td>
@@ -544,7 +621,8 @@ menuForm.addEventListener('submit', async (event) => {
   const newItem = {
     id: itemId || `menu_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
     title: sanitizeText(menuForm.elements.title.value, 90),
-    price: sanitizeText(menuForm.elements.price.value, 32),
+    category: normalizeMenuCategory(menuForm.elements.category.value),
+    price: normalizePrice(menuForm.elements.price.value),
     description: sanitizeText(menuForm.elements.description.value, 220),
     image: imageSource,
   };
