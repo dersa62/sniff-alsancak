@@ -42,6 +42,12 @@
     </section>
 
     <section class="admin-dashboard" data-panel-dashboard hidden>
+      <nav class="admin-quick-map" aria-label="Hızlı Geçiş">
+        <a href="#panel-menu">Menü</a>
+        <a href="#panel-rezervasyon">Rezervasyon</a>
+        <a href="#panel-etkinlik">Etkinlik</a>
+      </nav>
+
       <div class="admin-stats">
         <article class="admin-stat-card">
           <span>Toplam Rezervasyon</span>
@@ -58,7 +64,7 @@
       </div>
 
       <div class="admin-grid">
-        <article class="admin-card">
+        <article class="admin-card" id="panel-rezervasyon">
           <div class="admin-card-head">
             <h2>Rezervasyonlar</h2>
             <button type="button" class="btn btn-ghost" data-clear-reservations>Tümünü Sil</button>
@@ -82,7 +88,7 @@
           </div>
         </article>
 
-        <article class="admin-card">
+        <article class="admin-card" id="panel-etkinlik">
           <div class="admin-card-head">
             <h2>Etkinlik Yönetimi</h2>
             <span class="admin-hint">Eklenen etkinlikler ana sitede otomatik görünür.</span>
@@ -133,7 +139,7 @@
           </div>
         </article>
 
-        <article class="admin-card">
+        <article class="admin-card" id="panel-menu">
           <div class="admin-card-head">
             <h2>Menü Yönetimi</h2>
             <span class="admin-hint">Buradan eklediğin ürünler `Menü` sayfasında görünür.</span>
@@ -143,6 +149,15 @@
             <label>
               Ürün Adı
               <input type="text" name="title" required placeholder="Velvet Negroni">
+            </label>
+            <label>
+              Kategori
+              <select name="category" required>
+                <option value="kokteyller">Kokteyller</option>
+                <option value="yiyecekler">Yiyecekler</option>
+                <option value="soguk-icecekler">Soğuk İçecekler</option>
+                <option value="soft-icecekler">Soft İçecekler</option>
+              </select>
             </label>
             <label>
               Fiyat (Opsiyonel)
@@ -173,6 +188,7 @@
               <thead>
                 <tr>
                   <th>Ad</th>
+                  <th>Kategori</th>
                   <th>Fiyat</th>
                   <th>Açıklama</th>
                   <th>Görsel</th>
