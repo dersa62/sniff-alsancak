@@ -144,6 +144,37 @@
             <h2>Menü Yönetimi</h2>
             <span class="admin-hint">Buradan eklediğin ürünler `Menü` sayfasında görünür.</span>
           </div>
+          <section class="admin-subsection">
+            <h3>Menü Kategorileri</h3>
+            <form class="admin-form admin-form-grid" id="menu-category-form" autocomplete="off">
+              <input type="hidden" name="category_key">
+              <label>
+                Kategori Adı
+                <input type="text" name="label" required placeholder="Örn: Şaraplar">
+              </label>
+              <div class="admin-form-actions full">
+                <button type="submit" class="btn btn-primary">Kategori Kaydet</button>
+                <button type="button" class="btn btn-ghost" data-reset-menu-category-form>Temizle</button>
+              </div>
+              <p class="admin-note full" data-menu-category-note></p>
+            </form>
+
+            <div class="admin-table-wrap">
+              <table class="admin-table">
+                <thead>
+                  <tr>
+                    <th>Kategori</th>
+                    <th>Anahtar</th>
+                    <th>Durum</th>
+                    <th>Ürün</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody data-menu-categories-body></tbody>
+              </table>
+            </div>
+          </section>
+
           <form class="admin-form admin-form-grid" id="menu-form" autocomplete="off">
             <input type="hidden" name="menu_item_id">
             <label>
@@ -174,7 +205,7 @@
             <label class="full">
               Yeni Ürün Fotoğrafı
               <input type="file" name="image_file" accept="image/*">
-              <small class="admin-field-hint">JPG, PNG veya WebP dosyası seçebilirsiniz.</small>
+              <small class="admin-field-hint">JPG, PNG veya WebP dosyası seçebilirsiniz. Önerilen en-boy oranı: 1:1 (kare). Maksimum dosya boyutu: 4 MB.</small>
             </label>
             <div class="admin-form-actions full">
               <button type="submit" class="btn btn-primary">Kaydet</button>

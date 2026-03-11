@@ -56,6 +56,18 @@
   box-sizing: border-box;
 }
 
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
 html {
   scroll-behavior: smooth;
   background-color: #18070d;
@@ -600,7 +612,7 @@ main {
   height: 100%;
   object-fit: cover;
   object-position: center;
-  filter: saturate(0.84) brightness(0.64) contrast(1.06);
+  filter: saturate(0.88) brightness(0.72) contrast(1.04);
   transform: scale(1.02);
   transform-origin: center;
 }
@@ -610,8 +622,8 @@ main {
   inset: 0;
   z-index: 1;
   background:
-    linear-gradient(270deg, rgba(7, 6, 9, 0.08), rgba(7, 6, 9, 0.62) 58%, rgba(7, 6, 9, 0.88) 100%),
-    radial-gradient(circle at 72% 22%, rgba(255, 216, 120, 0.24), transparent 34%);
+    linear-gradient(270deg, rgba(7, 6, 9, 0.06), rgba(7, 6, 9, 0.5) 58%, rgba(7, 6, 9, 0.72) 100%),
+    radial-gradient(circle at 72% 22%, rgba(255, 216, 120, 0.2), transparent 34%);
   pointer-events: none;
 }
 
@@ -2232,6 +2244,53 @@ main {
   margin-top: 1.15rem;
 }
 
+.menu-accordion-empty {
+  margin: 0.1rem 0 0;
+  border: 1px solid rgba(255, 216, 90, 0.24);
+  border-radius: 14px;
+  background: rgba(12, 8, 10, 0.62);
+  color: #e7d5c7;
+  padding: 0.9rem;
+  font-size: 0.95rem;
+}
+
+.menu-category-strip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.56rem;
+  margin: 0 0 0.15rem;
+}
+
+.menu-category-chip {
+  border: 1px solid rgba(255, 216, 90, 0.28);
+  border-radius: 999px;
+  background: rgba(12, 8, 10, 0.5);
+  color: #f3dfcf;
+  padding: 0.42rem 0.86rem;
+  font-family: var(--font-ui);
+  font-size: 0.8rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition:
+    background 0.22s ease,
+    color 0.22s ease,
+    border-color 0.22s ease,
+    transform 0.22s ease;
+}
+
+.menu-category-chip:hover {
+  transform: translateY(-1px);
+  border-color: rgba(255, 216, 90, 0.54);
+}
+
+.menu-category-chip.is-active {
+  color: #2a1a09;
+  border-color: rgba(255, 216, 90, 0.9);
+  background: linear-gradient(120deg, #ffe08a, #ffd35a);
+  box-shadow: 0 10px 24px rgba(255, 211, 90, 0.24);
+}
+
 .menu-category {
   border: 1px solid rgba(255, 216, 90, 0.24);
   border-radius: 18px;
@@ -2290,11 +2349,26 @@ main {
 .menu-category-panel {
   display: grid;
   gap: 0.55rem;
-  padding: 0.8rem;
+  padding: 0 0.8rem;
   background:
     linear-gradient(145deg, rgba(14, 9, 11, 0.94), rgba(10, 7, 9, 0.9)),
     radial-gradient(circle at 85% 10%, rgba(175, 19, 47, 0.16), transparent 40%);
-  border-top: 1px solid rgba(255, 216, 90, 0.14);
+  border-top: 0 solid rgba(255, 216, 90, 0.14);
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  transition:
+    max-height 0.34s ease,
+    opacity 0.24s ease,
+    padding 0.24s ease,
+    border-top-width 0.24s ease;
+}
+
+.menu-category.is-open .menu-category-panel {
+  padding: 0.8rem;
+  border-top-width: 1px;
+  max-height: 1400px;
+  opacity: 1;
 }
 
 .menu-category-empty {
@@ -3316,6 +3390,10 @@ footer {
     min-height: 76vh;
   }
 
+  .home-entry .hero.hero-entry.hero-refined {
+    min-height: 95vh;
+  }
+
   .logo-composition {
     width: min(92vw, 700px);
     height: 62vh;
@@ -3473,6 +3551,16 @@ footer {
     margin-top: 0.28rem;
   }
 
+  .menu-category-strip {
+    gap: 0.42rem;
+  }
+
+  .menu-category-chip {
+    font-size: 0.72rem;
+    letter-spacing: 0.06em;
+    padding: 0.38rem 0.7rem;
+  }
+
   .site-nav {
     top: 8px;
     padding: 0.75rem 0.95rem;
@@ -3579,7 +3667,7 @@ footer {
   }
 
   .story-banner-media {
-    min-height: 42vh;
+    min-height: clamp(360px, 60vh, 560px);
   }
 
   .story-banner-logo {
@@ -3646,6 +3734,16 @@ footer {
   .footer-top-row {
     flex-direction: column;
     align-items: flex-start;
+  }
+
+  .footer-brand-area {
+    align-self: center;
+    text-align: center;
+  }
+
+  .footer-logo-lockup {
+    display: block;
+    margin-inline: auto;
   }
 
   .footer-top-social {
@@ -3960,6 +4058,24 @@ footer {
   display: flex;
   gap: 0.55rem;
   flex-wrap: wrap;
+}
+
+.admin-subsection {
+  border: 1px solid rgba(175, 19, 47, 0.28);
+  border-radius: 14px;
+  background: rgba(13, 9, 11, 0.58);
+  padding: 0.9rem;
+  margin-bottom: 1rem;
+}
+
+.admin-subsection h3 {
+  margin: 0;
+  font-size: 1rem;
+  color: #f1ddd2;
+}
+
+.admin-subsection .admin-form {
+  margin-top: 0.75rem;
 }
 
 .admin-modal-open {
