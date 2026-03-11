@@ -24,6 +24,7 @@ const cookiePreferenceKey = 'sniff_cookie_preference_v1';
 const reservationStorageKey = 'sniff_reservations_v1';
 const eventsStorageKey = 'sniff_events_v1';
 const menuStorageKey = 'sniff_menu_items_v1';
+const menuCategoriesStorageKey = 'sniff_menu_categories_v1';
 const eventsSyncKey = 'sniff_events_sync_v1';
 const eventsChannelKey = 'sniff_events_channel_v1';
 const reservationStorageLimit = 500;
@@ -60,7 +61,7 @@ const defaultMenuItems = [
     title: 'Velvet Negroni',
     description: 'Barrel gin, kırmızı bitter, vermut ve kakao-narenciye parfümü.',
     image: 'https://images.unsplash.com/photo-1749314374163-185677265d63?auto=format&fit=crop&fm=jpg&ixlib=rb-4.1.0&q=80&w=2400',
-    price: '',
+    price: '₺480',
   },
   {
     id: 'menu_midnight_citrus',
@@ -68,7 +69,7 @@ const defaultMenuItems = [
     title: 'Midnight Citrus',
     description: 'Yuzu, bergamot köpük ve canlı limon yağları.',
     image: 'https://images.unsplash.com/photo-1671741967944-cb60915f5823?auto=format&fit=crop&fm=jpg&ixlib=rb-4.1.0&q=80&w=2400',
-    price: '',
+    price: '₺470',
   },
   {
     id: 'menu_golden_bloom',
@@ -76,7 +77,7 @@ const defaultMenuItems = [
     title: 'Golden Bloom',
     description: 'Reposado tekila, safran ve passionfruit dengesi.',
     image: 'https://images.unsplash.com/photo-1745052811236-a56a0f8718d1?auto=format&fit=crop&fm=jpg&ixlib=rb-4.1.0&q=80&w=2400',
-    price: '',
+    price: '₺490',
   },
   {
     id: 'menu_smoked_garden',
@@ -84,7 +85,7 @@ const defaultMenuItems = [
     title: 'Smoked Garden',
     description: 'Mezcal, taze fesleğen, salatalık ve aromatik is.',
     image: 'https://images.unsplash.com/photo-1761388545625-b233a6f35628?auto=format&fit=crop&fm=jpg&ixlib=rb-4.1.0&q=80&w=2400',
-    price: '',
+    price: '₺500',
   },
   {
     id: 'menu_ruby_boulevard',
@@ -92,7 +93,7 @@ const defaultMenuItems = [
     title: 'Ruby Boulevard',
     description: 'Bourbon, kiraz reduksiyonu ve baharatlı bitiş.',
     image: 'https://images.unsplash.com/photo-1690021416125-56f8464a8b01?auto=format&fit=crop&fm=jpg&ixlib=rb-4.1.0&q=80&w=2400',
-    price: '',
+    price: '₺520',
   },
   {
     id: 'menu_neon_spritz',
@@ -100,7 +101,7 @@ const defaultMenuItems = [
     title: 'Neon Spritz',
     description: 'Mürver çiçeği, prosecco ve narenciye sisi.',
     image: 'https://images.unsplash.com/photo-1690021416431-d10365a06a3d?auto=format&fit=crop&fm=jpg&ixlib=rb-4.1.0&q=80&w=2400',
-    price: '',
+    price: '₺430',
   },
   {
     id: 'menu_saffron_sour',
@@ -108,7 +109,7 @@ const defaultMenuItems = [
     title: 'Saffron Sour',
     description: 'Safran şurubu, beyaz şeftali ve ipeksi doku.',
     image: 'https://images.unsplash.com/photo-1632558608598-f90ec7b026dd?auto=format&fit=crop&fm=jpg&ixlib=rb-4.1.0&q=80&w=2400',
-    price: '',
+    price: '₺460',
   },
   {
     id: 'menu_after_dark_martini',
@@ -116,7 +117,7 @@ const defaultMenuItems = [
     title: 'After Dark Martini',
     description: 'Espresso likörü, vanilya is dokusu ve kakao.',
     image: 'https://images.unsplash.com/photo-1745060829956-dcd14b3511cb?auto=format&fit=crop&fm=jpg&ixlib=rb-4.1.0&q=80&w=2400',
-    price: '',
+    price: '₺510',
   },
   {
     id: 'menu_truf_patates',
@@ -124,7 +125,7 @@ const defaultMenuItems = [
     title: 'Trüf Patates',
     description: 'Parmesan, trüf yağı ve sarımsak aioli ile servis edilir.',
     image: 'https://images.unsplash.com/photo-1625944230945-1b7dd3b949ab?auto=format&fit=crop&fm=jpg&ixlib=rb-4.1.0&q=80&w=2400',
-    price: '',
+    price: '₺320',
   },
   {
     id: 'menu_mini_slider',
@@ -132,7 +133,7 @@ const defaultMenuItems = [
     title: 'Mini Slider',
     description: 'Karamelize soğan, cheddar ve özel Sniff sosu.',
     image: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&fm=jpg&ixlib=rb-4.1.0&q=80&w=2400',
-    price: '',
+    price: '₺360',
   },
   {
     id: 'menu_ev_limonata',
@@ -140,7 +141,7 @@ const defaultMenuItems = [
     title: 'Ev Yapımı Limonata',
     description: 'Taze limon, nane ve hafif zencefil dokunuşu.',
     image: 'https://images.unsplash.com/photo-1523677011781-c91d1bbe2f9e?auto=format&fit=crop&fm=jpg&ixlib=rb-4.1.0&q=80&w=2400',
-    price: '',
+    price: '₺150',
   },
   {
     id: 'menu_zencefilli_soda',
@@ -148,18 +149,18 @@ const defaultMenuItems = [
     title: 'Zencefilli Soda',
     description: 'Soğuk soda, lime ve aromatik zencefil şurubu.',
     image: 'https://images.unsplash.com/photo-1571073175840-9d0904c9843a?auto=format&fit=crop&fm=jpg&ixlib=rb-4.1.0&q=80&w=2400',
-    price: '',
+    price: '₺160',
   },
 ];
 
-const menuCategories = [
-  { key: 'kokteyller', label: 'Kokteyller' },
-  { key: 'yiyecekler', label: 'Yiyecekler' },
-  { key: 'soguk-icecekler', label: 'Soğuk İçecekler' },
-  { key: 'soft-icecekler', label: 'Soft İçecekler' },
+const defaultMenuCategories = [
+  { key: 'kokteyller', label: 'Kokteyller', visible: true },
+  { key: 'yiyecekler', label: 'Yiyecekler', visible: true },
+  { key: 'soguk-icecekler', label: 'Soğuk İçecekler', visible: true },
+  { key: 'soft-icecekler', label: 'Soft İçecekler', visible: true },
 ];
 
-const menuCategoryByKey = new Map(menuCategories.map((category) => [category.key, category]));
+const defaultMenuPriceById = new Map(defaultMenuItems.map((item) => [item.id, item.price]));
 
 const cinematicGroups = Array.from(cinematicParallaxContainers).map((container) => ({
   container,
@@ -185,16 +186,24 @@ const normalizePrice = (value) => {
 };
 
 const normalizeMenuCategory = (value) => {
+  const categories = getMenuCategories();
+  const fallbackKey = categories[0]?.key || defaultMenuCategories[0].key;
   const cleaned = sanitizeText(value, 40).toLocaleLowerCase('tr-TR');
-  if (!cleaned) return 'kokteyller';
-  if (menuCategoryByKey.has(cleaned)) return cleaned;
-  const matched = menuCategories.find((category) => category.label.toLocaleLowerCase('tr-TR') === cleaned);
-  return matched ? matched.key : 'kokteyller';
+  if (!cleaned) return fallbackKey;
+
+  const categoryMap = new Map(categories.map((category) => [category.key, category]));
+  if (categoryMap.has(cleaned)) return cleaned;
+
+  const matched = categories.find((category) => category.label.toLocaleLowerCase('tr-TR') === cleaned);
+  return matched ? matched.key : fallbackKey;
 };
 
 const getMenuCategoryLabel = (value) => {
+  const categories = getMenuCategories();
+  const fallbackLabel = categories[0]?.label || defaultMenuCategories[0].label;
   const key = normalizeMenuCategory(value);
-  return menuCategoryByKey.get(key)?.label || menuCategories[0].label;
+  const categoryMap = new Map(categories.map((category) => [category.key, category]));
+  return categoryMap.get(key)?.label || fallbackLabel;
 };
 
 const readStorageArray = (key) => {
@@ -215,6 +224,46 @@ const writeStorageArray = (key, data) => {
   } catch (_) {
     return false;
   }
+};
+
+const createMenuCategoryKey = (value, fallback = 'kategori') => {
+  const key = String(value || '')
+    .toLocaleLowerCase('tr-TR')
+    .replace(/ğ/g, 'g')
+    .replace(/ü/g, 'u')
+    .replace(/ş/g, 's')
+    .replace(/ı/g, 'i')
+    .replace(/ö/g, 'o')
+    .replace(/ç/g, 'c')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+  return key || fallback;
+};
+
+const normalizeMenuCategoryList = (list) => {
+  const normalized = [];
+  const usedKeys = new Set();
+  (Array.isArray(list) ? list : []).forEach((entry, index) => {
+    const label = sanitizeText(entry?.label, 40);
+    if (!label) return;
+    const rawKey = sanitizeText(entry?.key, 40) || label || `kategori-${index + 1}`;
+    const baseKey = createMenuCategoryKey(rawKey, `kategori-${index + 1}`);
+    let key = baseKey;
+    let suffix = 2;
+    while (usedKeys.has(key)) {
+      key = `${baseKey}-${suffix++}`;
+    }
+    usedKeys.add(key);
+    normalized.push({ key, label, visible: entry?.visible !== false });
+  });
+  return normalized;
+};
+
+const getMenuCategories = () => {
+  const stored = normalizeMenuCategoryList(readStorageArray(menuCategoriesStorageKey));
+  if (stored.length > 0) return stored;
+  writeStorageArray(menuCategoriesStorageKey, defaultMenuCategories);
+  return [...defaultMenuCategories];
 };
 
 const sanitizeImage = (value, fallbackImage = defaultEvents[0].image) => {
@@ -264,7 +313,18 @@ const getMenuItems = () => {
   const normalized = readStorageArray(menuStorageKey)
     .map((item, index) => normalizeMenuItem(item, index))
     .filter(Boolean);
-  if (normalized.length > 0) return normalized;
+  if (normalized.length > 0) {
+    const hasAnyPrice = normalized.some((item) => normalizePrice(item.price));
+    if (hasAnyPrice) return normalized;
+
+    // Backward compatibility for old records where all menu prices were empty.
+    const hydrated = normalized.map((item) => {
+      const fallbackPrice = defaultMenuPriceById.get(item.id) || '';
+      return fallbackPrice ? { ...item, price: fallbackPrice } : item;
+    });
+    writeStorageArray(menuStorageKey, hydrated);
+    return hydrated;
+  }
   writeStorageArray(menuStorageKey, defaultMenuItems);
   return [...defaultMenuItems];
 };
@@ -368,7 +428,8 @@ const createMenuRow = (item) => {
 };
 
 const buildMenuCategories = (items) => {
-  const grouped = menuCategories.map((category) => ({ ...category, items: [] }));
+  const visibleCategories = getMenuCategories().filter((category) => category.visible !== false);
+  const grouped = visibleCategories.map((category) => ({ ...category, items: [] }));
   const groupedMap = new Map(grouped.map((category) => [category.key, category]));
 
   items.forEach((item) => {
@@ -385,7 +446,39 @@ const buildMenuCategories = (items) => {
 const bindMenuAccordion = (target) => {
   if (target.dataset.menuAccordionBound === '1') return;
 
+  const setOpenCategory = (nextCategoryNode, keepOpen = true) => {
+    if (!(nextCategoryNode instanceof HTMLElement)) return;
+    const allCategories = target.querySelectorAll('.menu-category');
+    allCategories.forEach((node) => {
+      const toggleButton = node.querySelector('[data-menu-toggle]');
+      const shouldOpen = node === nextCategoryNode ? keepOpen : false;
+      node.classList.toggle('is-open', shouldOpen);
+      if (toggleButton instanceof HTMLElement) {
+        toggleButton.setAttribute('aria-expanded', shouldOpen ? 'true' : 'false');
+      }
+    });
+
+    const activeKey = keepOpen ? nextCategoryNode.getAttribute('data-menu-key') || '' : '';
+    const chips = target.querySelectorAll('[data-menu-jump]');
+    chips.forEach((chip) => {
+      const isActive = chip.getAttribute('data-menu-jump') === activeKey;
+      chip.classList.toggle('is-active', isActive);
+      chip.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+    });
+  };
+
   target.addEventListener('click', (event) => {
+    const jumpButton = event.target instanceof HTMLElement ? event.target.closest('[data-menu-jump]') : null;
+    if (jumpButton instanceof HTMLButtonElement) {
+      const targetKey = jumpButton.getAttribute('data-menu-jump');
+      if (!targetKey) return;
+      const categoryNode = target.querySelector(`.menu-category[data-menu-key="${targetKey}"]`);
+      if (!(categoryNode instanceof HTMLElement)) return;
+      setOpenCategory(categoryNode, true);
+      categoryNode.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      return;
+    }
+
     const targetButton = event.target instanceof HTMLElement ? event.target.closest('[data-menu-toggle]') : null;
     if (!(targetButton instanceof HTMLButtonElement)) return;
 
@@ -393,20 +486,7 @@ const bindMenuAccordion = (target) => {
     if (!(categoryNode instanceof HTMLElement)) return;
 
     const isOpen = categoryNode.classList.contains('is-open');
-    const allCategories = target.querySelectorAll('.menu-category');
-    allCategories.forEach((node) => {
-      const panel = node.querySelector('.menu-category-panel');
-      const toggleButton = node.querySelector('[data-menu-toggle]');
-      const shouldOpen = node === categoryNode ? !isOpen : false;
-
-      node.classList.toggle('is-open', shouldOpen);
-      if (panel instanceof HTMLElement) {
-        panel.hidden = !shouldOpen;
-      }
-      if (toggleButton instanceof HTMLElement) {
-        toggleButton.setAttribute('aria-expanded', shouldOpen ? 'true' : 'false');
-      }
-    });
+    setOpenCategory(categoryNode, !isOpen);
   });
 
   target.dataset.menuAccordionBound = '1';
@@ -446,10 +526,36 @@ const renderMenu = () => {
     target.innerHTML = '';
 
     const categories = buildMenuCategories(items);
+    if (categories.length === 0) {
+      const empty = document.createElement('p');
+      empty.className = 'menu-accordion-empty';
+      empty.textContent = 'Menü kategorileri geçici olarak gizlenmiştir.';
+      target.appendChild(empty);
+      return;
+    }
+
+    const categoryStrip = document.createElement('div');
+    categoryStrip.className = 'menu-category-strip';
+    categoryStrip.setAttribute('aria-label', 'Hızlı kategori geçişi');
+
+    categories.forEach((category, index) => {
+      const chip = document.createElement('button');
+      chip.type = 'button';
+      chip.className = 'menu-category-chip';
+      if (index === 0) chip.classList.add('is-active');
+      chip.setAttribute('data-menu-jump', category.key);
+      chip.setAttribute('aria-pressed', index === 0 ? 'true' : 'false');
+      chip.textContent = getMenuCategoryLabel(category.key);
+      categoryStrip.appendChild(chip);
+    });
+
+    target.appendChild(categoryStrip);
+
     categories.forEach((category, index) => {
       const categoryNode = document.createElement('article');
       categoryNode.className = 'menu-category';
       categoryNode.setAttribute('data-reveal', '');
+      categoryNode.setAttribute('data-menu-key', category.key);
 
       const shouldOpen = index === 0;
       categoryNode.classList.toggle('is-open', shouldOpen);
@@ -488,7 +594,6 @@ const renderMenu = () => {
 
       const panel = document.createElement('div');
       panel.className = 'menu-category-panel';
-      panel.hidden = !shouldOpen;
 
       if (category.items.length === 0) {
         const empty = document.createElement('p');
@@ -1101,7 +1206,7 @@ window.addEventListener('storage', (event) => {
   if (event.key === eventsStorageKey || event.key === eventsSyncKey) {
     renderEvents();
   }
-  if (event.key === menuStorageKey) {
+  if (event.key === menuStorageKey || event.key === menuCategoriesStorageKey) {
     renderMenu();
   }
 });
@@ -1111,6 +1216,9 @@ eventsChannel?.addEventListener('message', (event) => {
     renderEvents();
   }
   if (event?.data?.type === 'menu-updated') {
+    renderMenu();
+  }
+  if (event?.data?.type === 'menu-categories-updated') {
     renderMenu();
   }
 });
