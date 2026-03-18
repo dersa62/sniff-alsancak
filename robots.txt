@@ -2,4 +2,4 @@ User-agent: *
 Allow: /
 Disallow: /panel/
 
-Sitemap: https://dersa62.github.io/sniff-alsancak/sitemap.xml
+Sitemap: https://sniffalsancak.com/sitemap.xml

@@ -28,6 +28,7 @@ const menuCategoriesStorageKey = 'sniff_menu_categories_v1';
 const eventsSyncKey = 'sniff_events_sync_v1';
 const eventsChannelKey = 'sniff_events_channel_v1';
 const reservationStorageLimit = 500;
+const reservationMailRecipient = 'snifflasancak@gmail.com';
 const eventsChannel = typeof BroadcastChannel !== 'undefined' ? new BroadcastChannel(eventsChannelKey) : null;
 
 const defaultEvents = [
@@ -343,28 +344,26 @@ const persistReservation = (reservation) => {
   writeStorageArray(reservationStorageKey, reservations);
 };
 
-const submitReservationToEndpoint = async (endpoint, reservation) => {
-  const response = await fetch(endpoint, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      Accept: 'application/json',
-    },
-    body: JSON.stringify(reservation),
-  });
+const buildReservationMailtoUrl = (reservation) => {
+  const createdAtText = new Date(reservation.createdAt).toLocaleString('tr-TR');
+  const subject = `Sniff Rezervasyon Talebi - ${reservation.date} ${reservation.time}`;
+  const bodyLines = [
+    'Yeni rezervasyon talebi:',
+    '',
+    `Ad Soyad: ${reservation.name || '-'}`,
+    `Telefon: ${reservation.phone || '-'}`,
+    `Kisi Sayisi: ${reservation.guests || '-'}`,
+    `Tarih: ${reservation.date || '-'}`,
+    `Saat: ${reservation.time || '-'}`,
+    `Not: ${reservation.notes || '-'}`,
+    '',
+    `Talep Zamani: ${createdAtText}`,
+    `Kayit No: ${reservation.id || '-'}`,
+  ];
 
-  let payload = null;
-  try {
-    payload = await response.json();
-  } catch (_) {
-    payload = null;
-  }
-
-  if (!response.ok || !payload || payload.ok !== true) {
-    throw new Error((payload && payload.error) || 'Rezervasyon sunucuya iletilemedi.');
-  }
-
-  return payload;
+  return `mailto:${reservationMailRecipient}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(
+    bodyLines.join('\n')
+  )}`;
 };
 
 const createEventCard = (event) => {
@@ -1145,11 +1144,10 @@ yearNodes.forEach((node) => {
 reservationForms.forEach((form) => {
   clearReservationForm(form);
 
-  form.addEventListener('submit', async (event) => {
+  form.addEventListener('submit', (event) => {
     event.preventDefault();
     if (!form.reportValidity()) return;
 
-    const endpoint = form.getAttribute('data-reservation-endpoint') || 'api/reservation.php';
     const note = form.querySelector('.form-note');
     const submitButton = form.querySelector('button[type="submit"]');
     const originalButtonLabel = submitButton ? submitButton.textContent : '';
@@ -1178,19 +1176,32 @@ reservationForms.forEach((form) => {
       website: sanitizeText(formData.get('website'), 120),
     };
 
-    try {
-      await submitReservationToEndpoint(endpoint, record);
-      persistReservation(record);
-
+    if (record.website !== '') {
       if (note) {
-        note.textContent = 'Rezervasyon talebiniz alındı. Ekibimiz kısa süre içinde sizinle iletişime geçecektir.';
+        note.textContent = 'Rezervasyon talebiniz alindi.';
         note.style.color = '#e6b6a8';
       }
       form.reset();
-    } catch (_) {
+      if (submitButton) {
+        submitButton.disabled = false;
+        submitButton.textContent = originalButtonLabel || 'Hemen Rezervasyon Yap';
+      }
+      return;
+    }
+
+    try {
+      const mailtoUrl = buildReservationMailtoUrl(record);
       persistReservation(record);
+
       if (note) {
-        note.textContent = 'Sunucuya bağlanırken sorun oluştu. Talep yerel olarak kaydedildi; lütfen telefonla da teyit edin.';
+        note.textContent = 'Mail uygulamaniz aciliyor. Rezervasyon bilgilerini gondererek talebinizi tamamlayin.';
+        note.style.color = '#e6b6a8';
+      }
+      form.reset();
+      window.location.href = mailtoUrl;
+    } catch (_) {
+      if (note) {
+        note.textContent = 'Mail uygulamasi acilamadi. Lutfen telefonla bize ulasin.';
         note.style.color = '#f1b6a9';
       }
     } finally {
