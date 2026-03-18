@@ -1,44 +1,39 @@
-# Rezervasyon Sistemi Kurulumu (3. parti yok)
+# Rezervasyon Sistemi Kurulumu (mailto)
 
-Bu projede rezervasyon formu artik dogrudan kendi sunucundaki `api/reservation.php` endpoint'ine gider.
+Bu projede rezervasyon formu artik `mailto:` ile varsayilan e-posta uygulamasini acar ve talep metnini otomatik doldurur.
 
 ## 1) Gereksinim
 
-- PHP calistiran bir hosting (cPanel, VPS, Plesk vb.)
-- `mail()` fonksiyonunun aktif oldugu bir sunucu (ya da SMTP relay tanimli bir hosting)
+- Statik hosting yeterlidir (cPanel, VPS, GitHub Pages vb.)
+- Kullanicinin cihazinda varsayilan bir e-posta uygulamasi tanimli olmalidir.
 
-Not: Sadece GitHub Pages ile bu sistem calismaz. GitHub Pages statiktir, `PHP` calistirmaz.
+Not: `api/reservation.php` dosyasi istenirse sadece kayit/webhook icin kullanilabilir; form akisi icin zorunlu degildir.
 
 ## 2) Konfigurasyon
 
-Dosya: `api/config.php`
+Dosya: `assets/script.js`
 
 Asagidaki alanlari kendine gore duzenle:
 
-- `notify_email`: Rezervasyon bildiriminin gidecegi e-posta
-- `from_email`: Sunucuda tanimli gonderici e-posta
-- `from_name`: Gonderici ad
-- `webhook_url`: (Opsiyonel) Kendi panel/API endpoint'in
-- `webhook_secret`: (Opsiyonel) webhook imza anahtari
+- `reservationMailRecipient`: Rezervasyon talebinin gidecegi adres
 
 ## 3) Form akis
 
 Form dosyasi: `reservation.html`
 
 Form artik:
-- `data-reservation-endpoint="api/reservation.php"` ile API'ye gider
-- Basarili olursa hem sunucuya kaydeder hem de UI'da onay mesaji verir
-- Sunucu hatasinda yerel yedek kayit yapar
+- form alanlarini toplar
+- e-posta basligi ve govdesini satir satir olusturur
+- `mailto:` ile varsayilan e-posta uygulamasini acar
 
 ## 4) Sunucu tarafinda ne oluyor?
 
 Dosya: `api/reservation.php`
 
-- POST JSON alir
+- (Opsiyonel) POST JSON alir
 - Alanlari dogrular
 - Spam honeypot (`website`) kontrolu yapar
 - Kaydi `data/reservations.jsonl` dosyasina yazar
-- `mail()` ile otomatik bildirim e-postasi gonderir
 - Opsiyonel olarak `webhook_url` varsa kendi sistemine JSON yollar
 
 ## 5) Test
@@ -52,11 +47,10 @@ curl -sS -X POST http://127.0.0.1:8080/api/reservation.php \
 Beklenen cevap:
 
 ```json
-{"ok":true,"id":"...","stored":true,"mailSent":true,"webhookSent":false}
+{"ok":true,"id":"...","stored":true,"webhookSent":false}
 ```
 
 ## 6) Guvenlik notu
 
 - `data/.htaccess` eklendi (Apache'de storage klasorunu dis erisime kapatir)
 - `data/.gitignore` eklendi (kayit dosyalari git'e girmez)
-

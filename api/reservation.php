@@ -86,39 +86,6 @@ if (!$stored) {
     exit;
 }
 
-$subjectPrefix = (string)($config['subject_prefix'] ?? '[Sniff Rezervasyon]');
-$subject = sprintf('%s %s %s', $subjectPrefix, $date, $time);
-
-$message = implode(PHP_EOL, [
-    'Yeni rezervasyon olustu.',
-    '',
-    'Ad Soyad: ' . $name,
-    'Telefon: ' . $phone,
-    'Kisi: ' . $guests,
-    'Tarih: ' . $date,
-    'Saat: ' . $time,
-    'Not: ' . ($notes !== '' ? $notes : '-'),
-    '',
-    'Kayit ID: ' . $record['id'],
-    'Olusturma: ' . $record['createdAt'],
-    'IP: ' . $record['ip'],
-]);
-
-$fromEmail = (string)($config['from_email'] ?? 'noreply@localhost');
-$fromName = (string)($config['from_name'] ?? 'Sniff Alsancak');
-$notifyEmail = (string)($config['notify_email'] ?? '');
-$headers = [
-    'MIME-Version: 1.0',
-    'Content-Type: text/plain; charset=UTF-8',
-    'From: ' . sprintf('%s <%s>', $fromName, $fromEmail),
-    'Reply-To: ' . $fromEmail,
-];
-
-$mailSent = false;
-if ($notifyEmail !== '') {
-    $mailSent = @mail($notifyEmail, $subject, $message, implode("\r\n", $headers));
-}
-
 $webhookSent = false;
 $webhookUrl = trim((string)($config['webhook_url'] ?? ''));
 if ($webhookUrl !== '' && function_exists('curl_init')) {
@@ -154,7 +121,5 @@ echo json_encode([
     'ok' => true,
     'id' => $record['id'],
     'stored' => true,
-    'mailSent' => $mailSent,
     'webhookSent' => $webhookSent,
 ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
-
